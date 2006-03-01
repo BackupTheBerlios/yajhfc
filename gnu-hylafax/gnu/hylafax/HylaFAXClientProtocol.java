@@ -1,5 +1,5 @@
 // HylaFAXClientProtocol.java - a HylaFAX client protocol implementation in Java
-// $Id: HylaFAXClientProtocol.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+// $Id: HylaFAXClientProtocol.java,v 1.2 2006/03/01 11:36:05 jonas Exp $
 //
 // Copyright 1999, 2000 Joe Phillips <jaiger@innovationsw.com>
 // Copyright 2001 Innovation Software Group, LLC - http://www.innovationsw.com
@@ -90,7 +90,8 @@ public class HylaFAXClientProtocol extends FtpClientProtocol {
 
       // check response code
       StringTokenizer st= new StringTokenizer(response);
-      if(!st.nextToken().equals("250")){
+      String responseCode = st.nextToken();
+      if(!(responseCode.equals("250") || responseCode.equals("230"))){
          // command failed
          throw (new ServerResponseException(response));
       }// fi
