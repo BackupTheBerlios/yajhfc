@@ -1,5 +1,5 @@
 // Job.java - a HylaFAX Job representation
-// $Id: Job.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+// $Id: Job.java,v 1.2 2006/12/09 17:31:11 jonas Exp $
 //
 // Copyright 2001-2003 Innovation Software Group, LLC - http://www.innovationsw.com
 //                Joe Phillips <jaiger@innovationsw.com>
@@ -37,7 +37,7 @@ import gnu.hylafax.HylaFAXClientProtocol;
 /**
  * This class is a light, unsynchronized implementation of gnu.hylafax.Job.
  * @author $Author: jonas $
- * @version $Id: Job.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+ * @version $Id: Job.java,v 1.2 2006/12/09 17:31:11 jonas Exp $
  * @see gnu.hylafax.HylaFAXClientProtocol
  * @see gnu.hylafax.HylaFAXClient
  * @see gnu.hylafax.Job
@@ -126,6 +126,11 @@ public class Job implements gnu.hylafax.Job
       return getProperty("DIALSTRING");
    }// getDialstring
 
+   
+   public String getExternal() throws ServerResponseException, IOException {
+       return getProperty("EXTERNAL");
+   }
+   
    public String getNotifyAddress()
       throws ServerResponseException,
          IOException
@@ -261,6 +266,12 @@ public class Job implements gnu.hylafax.Job
       setProperty("DIALSTRING", value);
    }// setDialstring
 
+   public void setExternal(String value) throws ServerResponseException,
+            IOException {
+        setProperty("EXTERNAL", value);
+    }
+   
+   
    public void setNotifyAddress(String value)
       throws ServerResponseException,
          IOException

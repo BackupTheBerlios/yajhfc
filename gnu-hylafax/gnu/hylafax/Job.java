@@ -1,5 +1,5 @@
 // Job.java - a HylaFAX Job representation
-// $Id: Job.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+// $Id: Job.java,v 1.2 2006/12/09 17:31:10 jonas Exp $
 //
 // Copyright 2001-2003 Innovation Software Group, LLC - http://www.innovationsw.com
 //                Joe Phillips <jaiger@innovationsw.com>
@@ -72,6 +72,9 @@ public interface Job
 
    public String getDialstring()
       throws ServerResponseException, IOException;
+   
+   public String getExternal()
+       throws ServerResponseException, IOException;
 
    public String getNotifyAddress()
       throws ServerResponseException, IOException;
@@ -159,6 +162,9 @@ public interface Job
    public void setDialstring(String value)
       throws ServerResponseException, IOException;
 
+   public void setExternal(String value)
+   throws ServerResponseException, IOException;
+   
    public void setNotifyAddress(String value)
       throws ServerResponseException, IOException;
 

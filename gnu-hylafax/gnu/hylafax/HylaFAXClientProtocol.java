@@ -1,5 +1,5 @@
 // HylaFAXClientProtocol.java - a HylaFAX client protocol implementation in Java
-// $Id: HylaFAXClientProtocol.java,v 1.2 2006/03/01 11:36:05 jonas Exp $
+// $Id: HylaFAXClientProtocol.java,v 1.3 2006/12/09 17:31:10 jonas Exp $
 //
 // Copyright 1999, 2000 Joe Phillips <jaiger@innovationsw.com>
 // Copyright 2001 Innovation Software Group, LLC - http://www.innovationsw.com
@@ -848,6 +848,8 @@ public class HylaFAXClientProtocol extends FtpClientProtocol {
       String response;
       //StringTokenizer st;
 
+      if(debug) System.out.println("-> jparm "+parm);
+      
       ostream.write("jparm "+parm+"\r\n");
       ostream.flush();
       response= istream.readLine();
@@ -859,11 +861,13 @@ public class HylaFAXClientProtocol extends FtpClientProtocol {
       }
       */
       
-     
+      if (debug) System.out.println(response);
       if (response.startsWith("213")) {
           String res = response.substring(4);
           while (response.charAt(3) == '-') {
               response= istream.readLine();
+              if (debug) System.out.println(response);
+              
               if (!response.startsWith("213"))
                   throw (new ServerResponseException(response));
               res += "\n" + response.substring(4);
