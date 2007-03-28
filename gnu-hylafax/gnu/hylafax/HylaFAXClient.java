@@ -1,5 +1,5 @@
 // HylaFAXClient.java - a HylaFAX client protocol implementation in Java
-// $Id: HylaFAXClient.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+// $Id: HylaFAXClient.java,v 1.2 2007/03/28 20:14:06 jwolz Exp $
 //
 // Copyright 1999, 2000 Joe Phillips <jaiger@net-foundry.com>
 // Copyright 2001 Innovation Software Group, LLC - http://www.innovationsw.com
@@ -284,7 +284,6 @@ public class HylaFAXClient extends HylaFAXClientProtocol
          FileNotFoundException,
          ServerResponseException
    {
-      Vector filenames= new Vector();
       ByteArrayOutputStream buffer= new ByteArrayOutputStream();
       Getter spot;
 
@@ -336,17 +335,8 @@ public class HylaFAXClient extends HylaFAXClientProtocol
              )
           )
       );
-      boolean done= false;
-      while(!done){
-          String line= data.readLine();
-          if(line == null){
-             done= true;
-          }else{
-             filenames.addElement(line);
-          }
-      }
   
-      return filenames; 
+      return readFileNameList(data); 
    };// getList
 
    /**
@@ -380,7 +370,6 @@ public class HylaFAXClient extends HylaFAXClientProtocol
          ServerResponseException,
          FileNotFoundException
    {
-      Vector filenames= new Vector();
       ByteArrayOutputStream buffer= new ByteArrayOutputStream();
       Getter sparky;
 
@@ -432,19 +421,41 @@ public class HylaFAXClient extends HylaFAXClientProtocol
                 )
              )
           );
-      boolean done= false;
-      while(!done){
-          String line= data.readLine();
-          if(line == null){
-              done= true;
-          }else{
-              filenames.addElement(line);
-          }
-      }   
+ 
 
-      return filenames;
+      return readFileNameList(data);
    };// getNameList
 
+   
+   private Vector readFileNameList(BufferedReader data) throws IOException {
+       Vector filenames = new Vector();
+       
+       String accumLine = null, line = null;
+       
+       do {
+           line = data.readLine();
+           if (debug && line != null) {
+               System.out.println("  > " +line);
+           }
+           
+           if (accumLine == null) {
+               accumLine = line;
+           } else if (line != null) {
+               accumLine += line;
+           }
+           
+           if (accumLine != null) {
+               if (accumLine.charAt(accumLine.length() - 1) == '\\') { // HylaFAX line continuation
+                   accumLine = accumLine.substring(0, accumLine.length() - 1);
+               } else {
+                   filenames.addElement(accumLine);
+                   accumLine = null;
+               }
+           }
+       } while (line != null);
+       
+       return filenames;
+   }
    /**
     * get name list of files in the current directory.  Similar to getList()
     * but returns filenames only where getList() returns other, system

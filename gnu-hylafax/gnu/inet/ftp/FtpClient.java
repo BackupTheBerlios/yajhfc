@@ -1,5 +1,5 @@
 // FtpClient.java - a FTP client protocol implementation in Java
-// $Id: FtpClient.java,v 1.1 2005/09/25 10:42:12 jonas Exp $
+// $Id: FtpClient.java,v 1.2 2007/03/28 20:14:06 jwolz Exp $
 //
 // Copyright 1999, 2000 Joe Phillips <jaiger@innovationsw.com>
 // Copyright 2001, 2002 Innovation Software Group, LLC - http://www.innovationsw.com
@@ -400,6 +400,9 @@ public class FtpClient extends FtpClientProtocol
              done= true;
           }else{
              filenames.addElement(line);
+             if (debug) {
+                 System.out.println(">  " + line);
+             }
           }
       }
   
