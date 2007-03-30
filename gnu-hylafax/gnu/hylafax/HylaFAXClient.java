@@ -1,5 +1,5 @@
 // HylaFAXClient.java - a HylaFAX client protocol implementation in Java
-// $Id: HylaFAXClient.java,v 1.2 2007/03/28 20:14:06 jwolz Exp $
+// $Id: HylaFAXClient.java,v 1.3 2007/03/30 17:16:21 jwolz Exp $
 //
 // Copyright 1999, 2000 Joe Phillips <jaiger@net-foundry.com>
 // Copyright 2001 Innovation Software Group, LLC - http://www.innovationsw.com
@@ -284,59 +284,85 @@ public class HylaFAXClient extends HylaFAXClientProtocol
          FileNotFoundException,
          ServerResponseException
    {
-      ByteArrayOutputStream buffer= new ByteArrayOutputStream();
-      Getter spot;
+       ByteArrayOutputStream buffer= new ByteArrayOutputStream();
+       Getter spot;
 
-      if(passive == true){
-         // do passive style transfers
-         if(connection == null){
-         	connection= new PassiveConnection(pasv());
-         };
-         spot= new PassiveGetter(buffer, connection);
-      }else{
-         ActiveGetter aget= new ActiveGetter(buffer);
-         // tell server which port we'll listen on
-         port(getInetAddress(), aget.getPort());
-         spot= aget;
-      };// if passive mode
+       if(passive == true){
+          // do passive style transfers
+          if(connection == null){
+            connection= new PassiveConnection(pasv());
+          };
+          spot= new PassiveGetter(buffer, connection);
+       }else{
+          ActiveGetter aget= new ActiveGetter(buffer);
+          // tell server which port we'll listen on
+          port(getInetAddress(), aget.getPort());
+          spot= aget;
+       };// if passive mode
 
-      // start transfer
-      spot.setDebug(debug);
-      spot.addConnectionListeners(connectionListeners);
-      spot.addTransferListeners(transferListeners);
-      spot.start();
+       // start transfer
+       spot.setDebug(debug);
+       spot.addConnectionListeners(connectionListeners);
+       spot.addTransferListeners(transferListeners);
+       spot.start();
 
-      // start the listing ... 
-      try{
-         list(path);
-      }catch(FileNotFoundException fnfe){
-         spot.cancel();
-         throw fnfe;
-      }catch(IOException ioe){
-         spot.cancel();
-         throw ioe;
-      }catch(ServerResponseException sree){
-         spot.cancel();
-         throw sree;
-      }finally{
-         // wait for thread to complete
-         try{
-            spot.join();
-         }catch(InterruptedException ie){ /* no error */ };
-      };
+       // start the listing ... 
+       try{
+          list(path);
+       }catch(FileNotFoundException fnfe){
+          spot.cancel();
+          throw fnfe;
+       }catch(IOException ioe){
+          spot.cancel();
+          throw ioe;
+       }catch(ServerResponseException sree){
+          spot.cancel();
+          throw sree;
+       }finally{
+          // wait for thread to complete
+          try{
+             spot.join();
+          }catch(InterruptedException ie){ /* no error */ };
+       };
 
-      connection= null;
+       connection= null;
 
-      // make list of filenames
-      BufferedReader data= new BufferedReader(
-          new InputStreamReader(
-             new ByteArrayInputStream(
-                buffer.toByteArray()
-             )
-          )
-      );
-  
-      return readFileNameList(data); 
+       // make list of filenames
+       BufferedReader data= new BufferedReader(
+           new InputStreamReader(
+              new ByteArrayInputStream(
+                 buffer.toByteArray()
+              )
+           )
+       );
+       
+       Vector filenames = new Vector();
+       
+       String accumLine = null, line = null;
+       
+       do {
+           line = data.readLine();
+           if (debug && line != null) {
+               System.out.println("  > " +line);
+           }
+           
+           if (accumLine == null) {
+               accumLine = line;
+           } else if (line != null) {
+               accumLine += line;
+           }
+           
+           if (accumLine != null) {
+               if (accumLine.charAt(accumLine.length() - 1) == '\\') { // HylaFAX line continuation
+                   accumLine = accumLine.substring(0, accumLine.length() - 1);
+               } else {
+                   filenames.addElement(accumLine);
+                   accumLine = null;
+               }
+           }
+       } while (line != null);
+       
+       return filenames;
    };// getList
 
    /**
@@ -370,92 +396,78 @@ public class HylaFAXClient extends HylaFAXClientProtocol
          ServerResponseException,
          FileNotFoundException
    {
-      ByteArrayOutputStream buffer= new ByteArrayOutputStream();
-      Getter sparky;
+       Vector filenames= new Vector();
+       ByteArrayOutputStream buffer= new ByteArrayOutputStream();
+       Getter sparky;
 
-      if(passive == true){
-         // do passive style transfers
-         if(connection == null){
-            connection= new PassiveConnection(pasv());
-         };
-         sparky= new PassiveGetter(buffer, connection);
-      }else{
-         ActiveGetter aget= new ActiveGetter(buffer);
-         // tell server which port we'll listen on
-         port(getInetAddress(), aget.getPort());
-         sparky= aget;
-      };// if passive mode
+       if(passive == true){
+          // do passive style transfers
+          if(connection == null){
+             connection= new PassiveConnection(pasv());
+          };
+          sparky= new PassiveGetter(buffer, connection);
+       }else{
+          ActiveGetter aget= new ActiveGetter(buffer);
+          // tell server which port we'll listen on
+          port(getInetAddress(), aget.getPort());
+          sparky= aget;
+       };// if passive mode
 
-      // start transfer
-      sparky.setDebug(debug);
-      sparky.addConnectionListeners(connectionListeners);
-      sparky.addTransferListeners(transferListeners);
-      sparky.start();
-    
-      // initiate the nlst command...
-      try{ 
-         nlst(path);
-      }catch(FileNotFoundException fnfe){
-         sparky.cancel();
-         throw fnfe;
-      }catch(IOException ioe){
-         sparky.cancel();
-         throw ioe;
-      }catch(ServerResponseException sree){
-         sparky.cancel();
-         throw sree;
-      }finally{
-         // transfer complete
-         try{
-             sparky.join();
-         }catch(InterruptedException ie){ /* it's ok */ };
-      };
+       // start transfer
+       sparky.setDebug(debug);
+       sparky.addConnectionListeners(connectionListeners);
+       sparky.addTransferListeners(transferListeners);
+       sparky.start();
+     
+       // initiate the nlst command...
+       try{ 
+          nlst(path);
+       }catch(FileNotFoundException fnfe){
+          sparky.cancel();
+          throw fnfe;
+       }catch(IOException ioe){
+          sparky.cancel();
+          throw ioe;
+       }catch(ServerResponseException sree){
+          sparky.cancel();
+          throw sree;
+       }catch(Exception e){
+          sparky.cancel();
+          throw new ServerResponseException(e.getMessage());
+       }finally{
+          // transfer complete
+          try{
+              sparky.join();
+          }catch(InterruptedException ie){ /* it's ok */ };
+       };
 
-      connection= null;
+       connection= null;
 
-      // build file list
-      BufferedReader data= new BufferedReader(
-          new InputStreamReader(
-             new ByteArrayInputStream(
-                   buffer.toByteArray()
-                )
-             )
-          );
- 
-
-      return readFileNameList(data);
-   };// getNameList
-
-   
-   private Vector readFileNameList(BufferedReader data) throws IOException {
-       Vector filenames = new Vector();
-       
-       String accumLine = null, line = null;
-       
-       do {
-           line = data.readLine();
-           if (debug && line != null) {
-               System.out.println("  > " +line);
-           }
-           
-           if (accumLine == null) {
-               accumLine = line;
-           } else if (line != null) {
-               accumLine += line;
-           }
-           
-           if (accumLine != null) {
-               if (accumLine.charAt(accumLine.length() - 1) == '\\') { // HylaFAX line continuation
-                   accumLine = accumLine.substring(0, accumLine.length() - 1);
-               } else {
-                   filenames.addElement(accumLine);
-                   accumLine = null;
+       // build file list
+       BufferedReader data= new BufferedReader(
+           new InputStreamReader(
+              new ByteArrayInputStream(
+                    buffer.toByteArray()
+                 )
+              )
+           );
+       boolean done= false;
+       while(!done){
+           String line= data.readLine();
+           if(line == null){
+               done= true;
+           }else{
+               filenames.addElement(line);
+               if (debug) {
+                   System.out.println("  > " +line);
                }
            }
-       } while (line != null);
-       
+       }   
+
        return filenames;
-   }
+   };// getNameList
+
+
    /**
     * get name list of files in the current directory.  Similar to getList()
     * but returns filenames only where getList() returns other, system
