@@ -1,0 +1,30 @@
+YajHFC & CUPS
+=============
+
+This document describes how you can create a "fax printer" in CUPS
+that uses YajHFC as frontend.
+
+1. Install YajHFC and sudo.
+
+2. Modify the settings at top of the "hylafax" script in this archive to use the 
+   correct paths.
+   Use/create some unpriviledged user with a writable home directory as DEFAULTUSER.
+   (DEFAULTUSER is used only in rare occasions, e.g. when submitting a test page from
+   the CUPS web frontend)
+
+3. Copy the "hylafax" script to the CUPS backend directory (usually /usr/lib/cups/backend)
+   and make sure it's executable (e.g. "chmod 0755 /usr/lib/cups/backend/hylafax")
+
+4. Copy the "hylafax.ppd" file to the CUPS model directory (usually /usr/share/cups/model)
+
+5. Restart CUPS and use the web interface to add a new printer with the device 
+   "Local Hylafax server" and model "Hylafax".
+
+6. Enjoy!
+
+NOTE: 
+Do not use the CUPS test page to test the script. It doesn't send a username to run YajHFC under,
+so the DEFAULTUSER is used who often doesn't have the rights to access the X server.
+
+In the case of problems/suggestions/etc., you may contact me at jwolz@freenet.de
+- Jonas Wolz

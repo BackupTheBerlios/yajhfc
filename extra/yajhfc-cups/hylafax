@@ -1,0 +1,167 @@
+#!/bin/bash
+#
+# User configuration:
+# ###################
+
+# Path to the xmessage program:
+MESSAGEBOX=/usr/X11R6/bin/xmessage
+
+# Path to java:
+JAVA=/opt/java/bin/java
+
+# Path to yajhfc:
+FAXJAR=/opt/daten/Ablage/yajhfc.jar
+
+# Default user to use when no username is given by cups
+DEFAULTUSER=cupsfax
+
+# End of user configuration.
+#
+# Copyright (C) 2001-2002 Sebastiano Vigna <vigna@acm.org>
+#
+#   This program is free software; you can redistribute it and/or modify it
+#   under the terms of the GNU General Public License as published by the Free
+#   Software Foundation; either version 2 of the License, or (at your option)
+#   any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+#   for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+# Modified by Michael Goffioul <goffioul@imec.be>
+#
+#   - phone number as option instead of job name: "-o phone=<number>"
+#
+# Modified by Arnold Moene <a.f.moene@eduphys.xs4all.nl>
+#
+# - This is a hacked version of the fax backend, to make it work for 
+#   a local HylaFAX server 
+#
+# Additional fixes by Kevin Ivory <Ivory@SerNet.de>
+#
+# Modified by Jonas Wolz <jwolz@freenet.de>
+#
+# - changed to work with YajHFC
+#
+#
+# Derived from fax4CUPS 1.22, a fax backend for CUPS, to use X app to 
+# pick up fax info by Glenn Burkhardt <gbburkhardt@verizon.net>
+#
+# Note:  to put messages into the CUPS error log, use 
+#        echo "ERROR: your error or info message" 1>&2
+#
+# The HylaFAX client program 'faxstat' must be in the search path of
+# this script, which is run as 'root'.
+#
+export PATH=$PATH:/usr/local/bin	# in case faxstat is in /usr/local/bin
+
+showError()
+{
+    # to the CUPS error log
+    echo "ERROR: $1" 1>&2
+
+    # to the user
+    sudo -H -u $USER $MESSAGEBOX "ERROR: $1"
+}
+
+# setup for invocation of X applications to 
+unset XAUTHORITY
+DISPLAY=:0.0
+export DISPLAY
+
+# Called with no arguments, we list the provided HylaFAX backend 
+# (serial devices are irrelevant here).
+
+if [ $# -eq 0 ]; then
+    for i in $JAVA $MESSAGEBOX ; do 
+        which $i >& /dev/null
+	if [ $? != 0 ]; then
+	    echo "ERROR: can't find HylaFAX program $i" 1>&2
+	    exit 1; 
+	fi
+    done
+    echo "direct hylafax:/local \"Unknown\" \"Local HylaFAX server\""
+    exit 0
+fi
+
+if [ ! -r $FAXJAR ]; then
+	echo "ERROR: cannot find .jar file $FAXJAR" 1>&2
+	exit 1;
+fi
+
+# Get the user that owns the job
+USER=$2
+if [ -z $USER ]; then
+	echo "INFO: No user given. Using default ($DEFAULTUSER)." 1>&2
+	USER=$DEFAULTUSER ;
+fi
+
+XAUTHORITY=/home/$USER/.Xauthority
+if [ -f $XAUTHORITY ]; then
+	export XAUTHORITY ;
+else
+	unset XAUTHORITY ;
+fi
+
+echo 1>&2 # Apparently the first character emitted is somehow "eaten" by the reader
+
+if [ $# -eq 6 ]; then
+	# If we find six arguments, the last one is the fax name; otherwise,
+	# we're reading the fax data from stdin.
+	# Some files lock out users from reading the CUPS spool directory, 
+	# and pass the file in as arg 6.  So copy the file somewhere that
+	# everyone can read it.
+	FAXNAME=$(mktemp </dev/null /tmp/fax.XXXXXX) || (echo "ERROR: Failed to create temporary file" 1>&2; exit 1)
+
+	# copy over file from spool directory
+	cp $6 $FAXNAME
+	chown $USER $FAXNAME
+	
+else
+	# copy from stdin
+	#cat > $FAXNAME
+	FAXNAME="--stdin"
+fi
+
+# do some checking before continuing
+#
+which $MESSAGEBOX >& /dev/null
+if [ $? != 0 ] ; then
+    echo "ERROR: can't find executable $MESSAGEBOX" 1>&2
+    exit 1
+fi
+
+
+# These executables must be in the user's search path
+for i in $JAVA ; do
+    sudo -H -u $USER which $i >& /dev/null
+    if [ $? != 0 ]; then
+	showError "can't find HylaFAX program $i for user $USER; check execution search path"
+	exit 1
+    fi
+done
+    
+# Use sudo to make sure that job is owned by the user that wants to "print",
+# not root. This is needed so that the owner of the job can remove it if 
+# needed.
+
+#m=`sudo -H -u $USER $JAVA -jar $FAXJAR $FAXNAME`
+m=`su -c "$JAVA -jar $FAXJAR $FAXNAME" $USER 2>&1`
+
+RC=$?
+case $RC in
+	0) echo "INFO: Fax sent" 1>&2 ;;
+	# I do not know the return values of sendfax
+	*) echo "ERROR: yajhfc error: $m" 1>&2 ;;
+esac
+
+if [ $FAXNAME != --stdin ]; then
+	rm -f $FAXNAME
+fi
+
+exit $RC
