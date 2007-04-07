@@ -1,0 +1,11 @@
+If you are running Windows 95/98/Me or Windows NT 4 a fax printer cannot be automatically
+installed by the YajHFC setup program.
+
+
+Please follow the instructions given at http://yajhfc.berlios.de/doc/winfaxprinter.html
+to install a fax printer.
+
+
+Note:
+The steps 1 (install YajHFC) and 2 (download & install redmon)
+have already been performed by this setup program.
