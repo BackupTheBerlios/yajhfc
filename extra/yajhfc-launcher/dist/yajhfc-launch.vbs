@@ -50,6 +50,10 @@ end if
 ' Fix %USERPROFILE% in Environment:
 env("USERPROFILE") = userprofile
 
+' Fix temp dir
+env("TMP") = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TMP"))
+env("TEMP") = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TEMP"))
+
 on error goto 0
 
 if yajhfcargs = ":registry:" then

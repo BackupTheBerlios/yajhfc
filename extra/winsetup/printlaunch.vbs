@@ -20,16 +20,42 @@ Dim wshhell, userprofile, java, strSrc, strDst, homedrv, homedir, env, yjargs
 
 Set WshShell = WScript.CreateObject("WScript.Shell")
 
-' Get the correct user profile path from the registry
+On Error Resume Next
+
+set env = WshShell.Environment("PROCESS")
+
+' Try to get the correct user profile path from the registry
 homedrv =  wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEDRIVE")
 homedir = wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEPATH")
-userprofile = homedrv & homedir
+if (IsEmpty(homedrv) Or IsEmpty(homedir)) then
+	' Keys not found in Volatile Env., try the "hard way"
+	dim WshNet, WMIService, Account
+	Set WshNet = WScript.CreateObject("WScript.Network")
+	Set WMIService = GetObject("winmgmts:\\.\root\cimv2")
+	Set Account = WMIService.Get("Win32_UserAccount.Name='" & WshNet.UserName & "',Domain='" & WshNet.UserDomain & "'")
 
-' Fix some enviroment variables:
-set env = WshShell.Environment("PROCESS")
-env("HOMEDRIVE") = homedrv
-env("HOMEDIR") = homedir
+	userprofile = WshShell.ExpandEnvironmentStrings(WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + Account.SID + "\ProfileImagePath"))
+else
+	' Fix some enviroment variables:
+	env("HOMEDRIVE") = homedrv
+	env("HOMEDIR") = homedir
+
+	userprofile = homedrv & homedir
+end if
+
+if IsEmpty(UserProfile) or UserProfile = "" then
+	MsgBox "Could not determine User Profile Path. Cancelling YajHFC launch.", vbCritical, "Error"
+	WScript.Quit 1
+end if
+
+' Fix %USERPROFILE% in Environment:
 env("USERPROFILE") = userprofile
+
+' Fix temp dir
+env("TMP") = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TMP"))
+env("TEMP") = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TEMP"))
+
+on error goto 0
 
 if yajhfcargs = ":registry:" then
 	yjargs = wshshell.regread("HKLM\Software\YajHFC\printlaunchparams")
