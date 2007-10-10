@@ -29,19 +29,19 @@ Source: w98info.txt; DestDir: {app}; OnlyBelowVersion: 0,5.0; Components: redmon
 [Setup]
 AppCopyright=© 2007 by Jonas Wolz
 AppName=YajHFC
-AppVerName=YajHFC 0.3.4
+AppVerName=YajHFC 0.3.5
 InfoBeforeFile=..\..\..\workspace\yajhfc\README.txt
 LicenseFile=..\..\..\workspace\yajhfc\COPYING
 DefaultDirName={pf}\YajHFC
 DefaultGroupName=YajHFC
 AppPublisher=Jonas Wolz
 AppPublisherURL=http://www.yajhfc.de.vu/
-AppVersion=YajHFC 0.3.4
+AppVersion=YajHFC 0.3.5
 AppID={{2B5B4C28-0B7E-45C8-AF23-9A1816E70911}
 UninstallDisplayIcon={app}\yajhfc.ico
-UninstallDisplayName=YajHFC 0.3.4
+UninstallDisplayName=YajHFC 0.3.5
 [Icons]
-Name: {group}\YajHFC fax client; Filename: javaw.exe; Parameters: -jar {app}\yajhfc.jar; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {group}\YajHFC fax client; Filename: javaw.exe; Parameters: -jar "{app}\yajhfc.jar"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
 Name: {group}\Homepage; Filename: http://www.yajhfc.de.vu/; Components: base
 Name: {group}\FAQ; Filename: {app}\faq.pdf; Components: docs
 Name: {group}\FAQ (Deutsch); Filename: {app}\faq_de.pdf; Components: docs
