@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dlg:window PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "dialog.dtd">
+<dlg:window xmlns:dlg="http://openoffice.org/2000/dialog" xmlns:script="http://openoffice.org/2000/script" dlg:id="SettingsDialog" dlg:left="193" dlg:top="141" dlg:width="222" dlg:height="84" dlg:closeable="true" dlg:moveable="true">
+ <dlg:bulletinboard>
+  <dlg:text dlg:id="Label1" dlg:tab-index="0" dlg:left="8" dlg:top="5" dlg:width="115" dlg:height="9" dlg:value="Path to the YajHFC jar file:"/>
+  <dlg:text dlg:id="Label2" dlg:tab-index="1" dlg:left="8" dlg:top="33" dlg:width="115" dlg:height="9" dlg:value="Path to the java executable (usually javaw.exe on Windows):"/>
+  <dlg:button dlg:id="cmdCancel" dlg:tab-index="3" dlg:left="165" dlg:top="65" dlg:width="48" dlg:height="13" dlg:value="Cancel" dlg:button-type="cancel"/>
+  <dlg:button dlg:id="cmdOK" dlg:tab-index="2" dlg:left="117" dlg:top="65" dlg:width="45" dlg:height="13" dlg:value="OK" dlg:button-type="ok"/>
+  <dlg:filecontrol dlg:id="txtJar" dlg:tab-index="5" dlg:left="8" dlg:top="18" dlg:width="211" dlg:height="11"/>
+  <dlg:filecontrol dlg:id="txtJava" dlg:tab-index="6" dlg:left="8" dlg:top="47" dlg:width="210" dlg:height="11"/>
+ </dlg:bulletinboard>
+</dlg:window>

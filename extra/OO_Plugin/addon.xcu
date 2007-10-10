@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<oor:node xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" oor:name="Addons" oor:package="org.openoffice.Office">
+  <node oor:name="AddonUI">
+    <node oor:name="AddonMenu">
+      <node oor:name="org.openoffice.Office.addon.YajHFCFax" oor:op="replace">
+        <prop oor:name="Context" oor:type="xs:string">
+          <value/>
+        </prop>
+        <prop oor:name="Title" oor:type="xs:string">
+          <value>YajHFC Fax</value>
+        </prop>
+        <prop oor:name="URL" oor:type="xs:string">
+          <value>XXX</value>
+        </prop>
+        <prop oor:name="Target" oor:type="xs:string">
+          <value>_self</value>
+        </prop>
+        <node oor:name="Submenu">
+          <node oor:name="menu01" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value/>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value>Configuration...</value>
+	      <value xml:lang="de">Konfiguration...</value>
+            </prop>
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>macro:///YajHFCFax.modMain.UI_ShowConfigDialog</value>
+            </prop>
+            <prop oor:name="Target" oor:type="xs:string">
+              <value>_self</value>
+            </prop>
+            <prop oor:name="ImageIdentifier" oor:type="xs:string">
+              <value/>
+            </prop>
+          </node>
+          <node oor:name="menu02" oor:op="replace">
+            <prop oor:name="Context" oor:type="xs:string">
+              <value>com.sun.star.text.TextDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.drawing.DrawingDocument</value>
+            </prop>
+            <prop oor:name="Title" oor:type="xs:string">
+              <value>Send document as Fax...</value>
+	      <value xml:lang="de">Dokument als Fax senden...</value>
+            </prop>
+            <prop oor:name="URL" oor:type="xs:string">
+              <value>macro:///YajHFCFax.modMain.SendFax</value>
+            </prop>
+            <prop oor:name="Target" oor:type="xs:string">
+              <value>_self</value>
+            </prop>
+            <prop oor:name="ImageIdentifier" oor:type="xs:string">
+              <value>%origin%/YajHFCFax/yajhfc</value>
+            </prop>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node oor:name="OfficeToolBar">
+      <node oor:name="org.openoffice.Office.addon.YajHFCFax" oor:op="replace">
+        <node oor:name="btn01" oor:op="replace">
+          <prop oor:name="Context" oor:type="xs:string">
+            <value>com.sun.star.text.TextDocument,com.sun.star.sheet.SpreadsheetDocument,com.sun.star.presentation.PresentationDocument,com.sun.star.drawing.DrawingDocument</value>
+          </prop>
+          <prop oor:name="Title" oor:type="xs:string">
+            <value>Send document as fax</value>
+	    <value xml:lang="de">Dokument als Fax senden</value>
+          </prop>
+          <prop oor:name="URL" oor:type="xs:string">
+            <value>macro:///YajHFCFax.modMain.SendFax</value>
+          </prop>
+          <prop oor:name="Target" oor:type="xs:string">
+            <value>_self</value>
+          </prop>
+        </node>
+      </node>
+    </node>
+  </node>
+</oor:node>

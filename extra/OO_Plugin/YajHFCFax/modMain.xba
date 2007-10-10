@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
+<script:module xmlns:script="http://openoffice.org/2000/script" script:name="modMain" script:language="StarBasic">Option Explicit
+REM  *****  BASIC  *****
+
+Sub Main
+	UI_showConfigDialog
+End Sub
+
+Const SettingsLibraryName = &quot;YajHFCFaxSettings&quot;
+Dim yajhfc_jar As String
+Dim java_exe as String
+
+Sub SaveSettings(javaExe as String, jarFile as string)
+	
+   Dim oLibs as Object, oLib as Object
+   Dim sFunction as String
+	
+   &apos;oLibs is array of libraries in soffice
+   oLibs = GlobalScope.BasicLibraries
+
+   &apos;Create new library, if it does not exist
+   if not oLibs.HasByName(SettingsLibraryName) then
+      oLibs.CreateLibrary(SettingsLibraryName)
+   end if
+
+   &apos;Get library object
+   oLib = oLibs.GetByName(SettingsLibraryName)
+
+   &apos;Create module within library if required
+   if not oLib.HasByName (&quot;modSettings&quot;) then
+      oLib.InsertByName (&quot;modSettings&quot;, &quot;DummyText&quot;)
+   end if
+
+   &apos;Set up function text
+   sFunction = &quot;Function getJavaEXE() as String&quot; &amp; Chr (13)
+   sFunction = sFunction &amp; &quot;getJavaEXE = &quot; &amp; Chr (34) &amp; javaExe &amp; Chr (34) &amp; Chr (13)
+   sFunction = sFunction &amp; &quot;End Function&quot; &amp; Chr(13) &amp; Chr(13)
+   
+   sFunction = sFunction &amp; &quot;Function getJarFile() as String&quot; &amp; Chr (13)
+   sFunction = sFunction &amp; &quot;getJarFile = &quot; &amp; Chr (34) &amp; jarFile &amp; Chr (34) &amp; Chr (13)
+   sFunction = sFunction &amp; &quot;End Function&quot;
+
+   &apos;Replace module text with function text as set up above
+   oLib.replacebyName (&quot;modSettings&quot;, sFunction)
+
+   &apos;Uncomment the following line to see the text of the new module: can be useful for testing, etc
+&apos;   msgbox oLib.GetByName (&quot;mod&quot; &amp; FunctionName)
+End Sub
+
+&apos; Returns a &quot;free&quot; temporary file name 
+function GetTempFilename() As String
+	Dim sTemp As String
+	Dim sResult as String
+	Dim i as Integer
+	
+	sTemp = ConvertFromURL(CreateUnoService(&quot;com.sun.star.util.PathSettings&quot;).Temp)
+	
+	sResult = Right(sTemp, 1)
+	if (sResult &lt;&gt; &quot;/&quot; and sResult &lt;&gt; &quot;\&quot;) then
+		sTemp = sTemp &amp; &quot;/&quot;
+	end if
+
+	sResult = sTemp &amp; &quot;fax.pdf&quot;
+	i = 1
+	do while FileExists(sResult)
+		sResult = sTemp &amp; &quot;fax&quot; &amp; i &amp; &quot;.pdf&quot;
+		i = i+1
+	loop
+	GetTempFilename = sResult
+end function
+
+Function MakePropertyValue( Optional cName As String, Optional uValue ) As com.sun.star.beans.PropertyValue
+   Dim oPropertyValue As New com.sun.star.beans.PropertyValue
+   If Not IsMissing( cName ) Then
+      oPropertyValue.Name = cName
+   EndIf
+   If Not IsMissing( uValue ) Then
+      oPropertyValue.Value = uValue
+   EndIf
+   MakePropertyValue() = oPropertyValue
+End Function 
+
+function doPDFExport(fileName as String) as boolean
+	dim filter as String
+	dim cURL as Object
+
+	if HasUnoInterfaces(ThisComponent, &quot;com.sun.star.lang.XServiceInfo&quot;) then
+		if ThisComponent.supportsService (&quot;com.sun.star.text.GenericTextDocument&quot;) then
+			filter = &quot;writer_pdf_Export&quot;
+		elseif ThisComponent.supportsService(&quot;com.sun.star.sheet.SpreadsheetDocument&quot;) then
+			filter = &quot;calc_pdf_Export&quot;
+		elseif ThisComponent.supportsService(&quot;com.sun.star.presentation.PresentationDocument&quot;) then
+			filter = &quot;impress_pdf_Export&quot;
+		elseif ThisComponent.supportsService(&quot;com.sun.star.drawing.GenericDrawingDocument&quot;) then
+			filter = &quot;draw_pdf_Export&quot;	
+		else
+			filter = &quot;&quot;
+		end if
+	else
+		filter = &quot;&quot;
+	end if
+
+	if (filter = &quot;&quot;) then
+		MsgBox &quot;Sending faxes is not supported for the current document type.&quot;
+		doPDFExport = false
+		exit function
+	end if
+
+   	&apos; Save the document using a filter.   
+  	ThisComponent.storeToURL(ConvertToURL(fileName), Array(_
+            MakePropertyValue( &quot;FilterName&quot;, filter),_
+            ) 
+
+	doPDFExport = true
+end function
+
+sub showConfigDialog
+	Dim Dlg As Object
+	Dim txtJava as Object, txtJar as Object
+
+	DialogLibraries.LoadLibrary(&quot;YajHFCFax&quot;)
+	Dlg = CreateUnoDialog(DialogLibraries.YajHFCFax.SettingsDialog)
+	Dlg.Model.Title = &quot;Configure YajHFC paths&quot;
+	txtJava = Dlg.getControl(&quot;txtJava&quot;)
+	txtJar = Dlg.getControl(&quot;txtJar&quot;)
+	
+	txtJava.Text = java_exe
+	txtJar.Text = yajhfc_jar
+	
+	Select Case Dlg.Execute() 
+	Case 1 &apos;OK
+	  SaveSettings txtJava.Text, txtJar.Text
+	Case 0 &apos;Cancel
+	  &apos; Do nothing
+	End Select
+end sub
+
+&apos; Returns true if settings have been loaded successfully
+function loadSettings as boolean
+	if GlobalScope.BasicLibraries.HasByName(SettingsLibraryName) then
+		GlobalScope.BasicLibraries.LoadLibrary(SettingsLibraryName) 
+		yajhfc_jar = getJarFile()
+		java_exe = getJavaEXE()
+		loadsettings = true
+	else
+		java_exe = "java"
+		loadsettings = false
+	end if
+end function
+
+sub UI_ShowConfigDialog
+	loadsettings
+	ShowConfigDialog
+end sub
+
+sub SendFax
+	Dim sTempFile as String
+	
+	if not loadSettings then
+		showConfigDialog
+		exit sub
+	end if
+	
+	sTempFile = getTempFileName()
+	
+	if doPDFExport(sTempFile) then
+	
+		Shell java_exe, 1, &quot;-jar &quot;&quot;&quot; &amp; yajhfc_jar &amp; &quot;&quot;&quot; --background &quot;&quot;&quot; &amp; sTempFile &amp; &quot;&quot;&quot;&quot;, true
+		
+		Kill sTempFile
+	end if
+end sub
+</script:module>
