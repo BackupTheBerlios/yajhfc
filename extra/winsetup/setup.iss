@@ -27,27 +27,27 @@ Source: ..\..\..\workspace\yajhfc\README_es.txt; DestDir: {app}; Components: doc
 Source: ..\..\..\workspace\yajhfc\README_fr.txt; DestDir: {app}; Components: docs
 Source: w98info.txt; DestDir: {app}; OnlyBelowVersion: 0,5.0; Components: redmon; Tasks: 
 [Setup]
-AppCopyright=© 2007 by Jonas Wolz
+AppCopyright=© 2005-2008 by Jonas Wolz
 AppName=YajHFC
-AppVerName=YajHFC 0.3.5
+AppVerName=YajHFC 0.3.6
 InfoBeforeFile=..\..\..\workspace\yajhfc\README.txt
 LicenseFile=..\..\..\workspace\yajhfc\COPYING
 DefaultDirName={pf}\YajHFC
 DefaultGroupName=YajHFC
 AppPublisher=Jonas Wolz
-AppPublisherURL=http://www.yajhfc.de.vu/
+AppPublisherURL=http://yajhfc.berlios.de/
 AppVersion=YajHFC 0.3.5
 AppID={{2B5B4C28-0B7E-45C8-AF23-9A1816E70911}
 UninstallDisplayIcon={app}\yajhfc.ico
-UninstallDisplayName=YajHFC 0.3.5
+UninstallDisplayName=YajHFC 0.3.6
 [Icons]
-Name: {group}\YajHFC fax client; Filename: javaw.exe; Parameters: -jar "{app}\yajhfc.jar"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {group}\YajHFC fax client; Filename: javaw.exe; Parameters: "-jar ""{app}\yajhfc.jar"""; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
 Name: {group}\Homepage; Filename: http://www.yajhfc.de.vu/; Components: base
 Name: {group}\FAQ; Filename: {app}\faq.pdf; Components: docs
 Name: {group}\FAQ (Deutsch); Filename: {app}\faq_de.pdf; Components: docs
 Name: {group}\FAQ (Español); Filename: {app}\faq_es.pdf; Components: docs
 Name: {group}\FAQ (Français); Filename: {app}\faq_fr.pdf; Components: docs
-Name: {commondesktop}\YajHFC fax client; Filename: javaw.exe; Parameters: -jar {app}\yajhfc.jar; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
+Name: {commondesktop}\YajHFC fax client; Filename: javaw.exe; Parameters: "-jar ""{app}\yajhfc.jar"""; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
 [Registry]
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: instpath; ValueData: {app}; Flags: uninsdeletekey
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: jarfile; ValueData: yajhfc.jar; Flags: uninsdeletekey
@@ -60,7 +60,8 @@ Name: Docs; Description: PDF-Documentation; Types: full
 Name: Redmon; Description: Install a fax printer; Types: full
 [Run]
 Filename: {app}\redmon\setup.exe; WorkingDir: {app}\redmon; StatusMsg: Installing redmon...; Components: redmon; Check: RedmonNotInstalled; Parameters: /Q
-Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""Apple LaserWriter 16/600 PS"""; Components: redmon; StatusMsg: Installing fax printer...; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,5.0
+Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""Apple LaserWriter 16/600 PS"""; Components: redmon; StatusMsg: Installing fax printer...; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,5.0; OnlyBelowVersion: 0,6.0
+Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""FX DP 305-AP PS"""; Components: redmon; StatusMsg: Installing fax printer...; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,6.0; Tasks: 
 Filename: {app}\w98info.txt; Flags: shellexec; OnlyBelowVersion: 0,5.0; Components: redmon
 [UninstallRun]
 Filename: rundll32; Components: redmon; Parameters: "printui.dll,PrintUIEntry /dl /n ""{cm:printername}"""; RunOnceId: DeletePrinter; MinVersion: 0,5.0
@@ -93,8 +94,22 @@ begin
 	end else
 		Log('No Java found...');
 	if (not result) then
-		if MsgBox('YajHFC needs an installed Java Runtime Environment version 1.5 or higher.'#10#13'Please download and install a Java Runtime Environment from http://www.java.com/ or http://java.sun.com/ and rerun Setup.'#10#13#10#13'Do you want to open http://www.java.com/ in a web browser?', mbError, MB_YESNO) = IDYES then
+	begin
+		case MsgBox(
+		  'YajHFC needs an installed Java Runtime Environment version 1.5 or higher.'#10#13
+		  'Please download and install a Java Runtime Environment from http://www.java.com/ or http://java.sun.com/ and rerun Setup.'#10#13
+		  'Do you want to download Java now?'#10#13#10#13
+		  '"Yes" opens http://www.java.com/ in a web browser and cancels the setup.'#10#13
+		  '"No" continues with the setup anyway (you will NOT be able to run YajHFC until a suitable Java version is installed, however!).'#10#13
+		  '"Cancel" aborts the installation.',
+		  mbError, MB_YESNOCANCEL) of
+		IDYES:
 			ShellExec('open', 'http://www.java.com/', '', '', SW_SHOW, ewNoWait, p);
+		IDNO:
+			result := true;
+		// else (IDCANCEL) do nothing
+		end;
+	end;
 end;
 
 function RedmonNotInstalled(): Boolean;
@@ -123,7 +138,7 @@ begin
 
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Description', 'YajHFC Redirected Port');
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Command', 'cscript.exe');
-	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Arguments', ExpandConstant('{app}\printlaunch.vbs'));
+	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Arguments', '"' + ExpandConstant('{app}\printlaunch.vbs') + '"');
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Printer', '');
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'LogFileName', ExpandConstant('{app}\yajhfc-redmon.log'));
 	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'Output', 0);
