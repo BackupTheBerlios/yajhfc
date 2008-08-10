@@ -1,4 +1,3 @@
-package yajhfc.faxcover.fop;
 /*
  * YAJHFC - Yet another Java Hylafax client
  * Copyright (C) 2005-2008 Jonas Wolz
@@ -12,11 +11,12 @@ package yajhfc.faxcover.fop;
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
-
+ 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+package yajhfc.faxcover;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,45 +25,47 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
 
+import yajhfc.EditorPaneFileConverter;
 import yajhfc.utils;
 import yajhfc.FileConverter.ConversionException;
-import yajhfc.faxcover.Faxcover;
-import yajhfc.faxcover.MarkupFaxcover;
 
-public class FOPFaxcover extends MarkupFaxcover {
+/**
+ * @author jonas
+ *
+ */
+public class HTMLFaxcover extends MarkupFaxcover {
 
-    public FOPFaxcover(URL coverTemplate) {
-        super(coverTemplate); 
+    /**
+     * @param coverTemplate
+     */
+    public HTMLFaxcover(URL coverTemplate) {
+        super(coverTemplate);
+        encodeNonASCIIAsEntity = true;
     }
-    
+
+    /* (non-Javadoc)
+     * @see yajhfc.faxcover.MarkupFaxcover#convertMarkupToHyla(java.io.File, java.io.OutputStream)
+     */
     @Override
     protected void convertMarkupToHyla(File tempFile, OutputStream out)
             throws IOException, ConversionException {
-        FOPFileConverter.SHARED_INSTANCE.convertToHylaFormat(tempFile, out, pageSize);
+        URL inURL = tempFile.toURI().toURL();
+
+        EditorPaneFileConverter.HTML_CONVERTER.convertToHylaFormat(inURL, out, pageSize, coverTemplate);
     }
     
     // Testing code:
     public static void main(String[] args) throws Exception {
         System.out.println("Creating cover page...");
-        Faxcover cov = new FOPFaxcover(new URL("file:/home/jonas/java/yajhfc/test.fo"));
+        Faxcover cov = new HTMLFaxcover(new URL("file:/home/jonas/java/yajhfc/extra/cover/Coverpage example.html"));
 
-        cov.comments = "foo\niniun iunuini uinini ninuin iuniuniu 9889hz h897h789 bnin uibiubui ubuib uibub ubiu bib bib ib uib i \nbar";
+        cov.comments = "foo\niniun iunuini uinini <tag> ninuin iuniuniu 9889hz h897h789 bnin uibiubui ubuib uibub ubiu bib bib ib uib i \nbar";
         cov.fromCompany = "foo Ü&Ö OHG";
         cov.fromFaxNumber = "989898";
         cov.fromLocation = "Bardorf";
         cov.fromVoiceNumber = "515616";
         cov.fromMailAddress = "a@bc.de";
 
-        //cov.pageCount = 10;
-//      String[] docs = { "/home/jonas/mozilla.ps", "/home/jonas/nssg.pdf" };
-//      for (int i=0; i<docs.length; i++)
-//      try {
-//      System.out.println(docs[i] + " pages: " + cov.estimatePostscriptPages(new FileInputStream(docs[i])));
-//      } catch (FileNotFoundException e) {
-//      e.printStackTrace();
-//      } catch (IOException e) {
-//      e.printStackTrace();
-//      }
 
         cov.pageCount = 55;
         cov.pageSize = utils.papersizes[0];
@@ -77,15 +79,15 @@ public class FOPFaxcover extends MarkupFaxcover {
         cov.toVoiceNumber = "4545454";
 
         try {
-            String outName = "/tmp/test.pdf";
+            String outName = "/tmp/testHTML.ps";
             cov.makeCoverSheet(new FileOutputStream(outName));
-            Runtime.getRuntime().exec(new String[] { "xpdf", outName } );
+            Runtime.getRuntime().exec(new String[] { "gv", outName } );
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
 }
-
