@@ -17,10 +17,30 @@ that uses YajHFC as frontend.
 
 4. Copy the "hylafax.ppd" file to the CUPS model directory (usually /usr/share/cups/model)
 
-5. Restart CUPS and use the web interface to add a new printer with the device 
+5. Find out under which user ID the cups daemon is running.
+   To do so, enter "ps aux|grep cupsd" in a console, the first column will contain the user name
+   of the daemon (usually root or something like "cupsd").
+
+6. If the cups daemon is running as root, go to step 7.
+   Else, you'll have to edit the sudo configuration file:
+   As root, enter "visudo" in a console, then paste the following configuration lines in and modify
+   them according to the comments:
+
+## begin YajHFC config
+# Replace "cupsd" with the user name cupsd is running under
+User_Alias CUPSUSER = cupsd
+# Replace "user1, user2, user3" with the users who should be allowed to send faxes
+Runas_Alias FAXUSERS = user1, user2, user3
+# Replace with the path to the java executable
+Cmnd_Alias FAXCOMMANDS = /usr/bin/java
+# Do not modify the next line
+CUPSUSER ALL=(FAXUSERS) NOPASSWD:FAXCOMMANDS
+## end YajHFC config
+
+7. Restart CUPS and use the web interface to add a new printer with the device 
    "Local Hylafax server" and model "Hylafax".
 
-6. Enjoy!
+8. Enjoy!
 
 NOTE: 
 Do not use the CUPS test page to test the script. It doesn't send a username to run YajHFC under,

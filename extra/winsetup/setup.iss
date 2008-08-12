@@ -1,3 +1,18 @@
+#ifndef VERSION
+ #define public VERSION "0.3.7"
+#endif
+#ifndef FOPVersion
+  #define public FOPVersion "0.1"
+#endif
+#ifndef WITHFOP
+  #define APPNAME "YajHFC"
+  #define APPVERNAME APPNAME + " " + VERSION
+#else
+  #define APPNAME "YajHFC and FOPPlugin"
+  #define APPVERNAME "YajHFC " + VERSION + " and FOPPlugin " + FOPVersion
+  #define FOPDIR "..\..\..\..\build\fop-0.95"
+#endif
+
 [Files]
 Source: ..\..\..\workspace\yajhfc\build\yajhfc.jar; DestDir: {app}; Components: base
 Source: ..\..\..\workspace\yajhfc\doc\faq_es.pdf; DestDir: {app}; Components: docs
@@ -26,32 +41,81 @@ Source: ..\..\..\workspace\yajhfc\README_de.txt; DestDir: {app}; Components: doc
 Source: ..\..\..\workspace\yajhfc\README_es.txt; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\README_fr.txt; DestDir: {app}; Components: docs
 Source: w98info.txt; DestDir: {app}; OnlyBelowVersion: 0,5.0; Components: redmon; Tasks: 
+Source: ..\cover\Coverpage example.html; DestDir: {app}\examples; Components: docs
+#ifndef WITHFOP
+Source: ..\cover\SomeLogo.png; DestDir: {app}\examples; Components: docs
+#else
+Source: ..\..\..\workspace\FOPPlugin\build\FOPPlugin.jar; DestDir: {app}; Components: base
+Source: ..\..\..\workspace\FOPPlugin\dist\readme.odt; DestDir: {app}; Components: docs
+Source: ..\..\..\workspace\FOPPlugin\dist\readme.pdf; DestDir: {app}; Components: base
+Source: ..\..\..\workspace\FOPPlugin\dist\yajhfc-fo.cmd; DestDir: {app}; Components: base
+Source: ..\..\..\workspace\FOPPlugin\dist\examples\cover.odt; DestDir: {app}\examples; Components: docs
+Source: ..\..\..\workspace\FOPPlugin\dist\examples\SomeLogo.png; DestDir: {app}\examples; Components: docs
+Source: ..\..\..\workspace\FOPPlugin\dist\examples\SomeLogoScaled.png; DestDir: {app}\examples; Components: docs
+Source: {#FOPDIR}\build\fop.jar; DestDir: {app}\lib; Components: base
+
+  #define FindHandle
+  #define FindResult
+  #define ClassPath ""
+
+  #sub ProcessFoundFile
+    #define FileName FindGetFileName(FindHandle)
+Source: {#FOPDIR}\lib\{#FileName}; DestDir: {app}\lib; Components: base
+	#define public ClassPath = ClassPath + "{app}\lib\" + FileName + ";"
+  #endsub
+
+  #for {FindHandle = FindResult = FindFirst(FOPDIR + "\lib\*.jar", 0); FindResult; FindResult = FindNext(FindHandle)} ProcessFoundFile
+  #if FindHandle
+    #expr FindClose(FindHandle)
+  #endif
+
+  #define ClassPath = ClassPath + "{app}\lib\fop.jar"
+#endif
 [Setup]
 AppCopyright=© 2005-2008 by Jonas Wolz
-AppName=YajHFC
-AppVerName=YajHFC 0.3.6
+AppName={#APPNAME}
+AppVerName={#APPVERNAME}
 InfoBeforeFile=..\..\..\workspace\yajhfc\README.txt
 LicenseFile=..\..\..\workspace\yajhfc\COPYING
 DefaultDirName={pf}\YajHFC
 DefaultGroupName=YajHFC
 AppPublisher=Jonas Wolz
 AppPublisherURL=http://yajhfc.berlios.de/
-AppVersion=YajHFC 0.3.5
+AppVersion={#APPVERNAME}
 AppID={{2B5B4C28-0B7E-45C8-AF23-9A1816E70911}
 UninstallDisplayIcon={app}\yajhfc.ico
-UninstallDisplayName=YajHFC 0.3.6
+UninstallDisplayName={#APPVERNAME}
+#ifdef WITHFOP
+OutputBaseFilename=Setup-FOPPlugin
+#endif
+
+#ifndef WITHFOP
+ #define public LaunchArgs="-jar """"{app}\yajhfc.jar"""""
+ #define public LaunchEXE="javaw.exe"
+ #define public LaunchEXEArgs=LaunchArgs
+#else
+ #define public LaunchArgs="-cp """"" + ClassPath + ";{app}\yajhfc.jar"""" yajhfc.Launcher --loadplugin=""""{app}\FOPPlugin.jar"""""
+ #define public LaunchEXE="{app}\yajhfc-fo.cmd"
+ #define public LaunchEXEArgs=""
+#endif
 [Icons]
-Name: {group}\YajHFC fax client; Filename: javaw.exe; Parameters: "-jar ""{app}\yajhfc.jar"""; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
-Name: {group}\Homepage; Filename: http://www.yajhfc.de.vu/; Components: base
+Name: {group}\YajHFC fax client; Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs}"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {group}\YajHFC fax client (debug mode); Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs} --debug --logfile=:prompt:"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {commondesktop}\YajHFC fax client; Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs}"; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
+#ifdef WITHFOP
+Name: {group}\FOPPlugin README; Filename: {app}\readme.pdf
+#endif
+Name: {group}\Homepage; Filename: http://yajhfc.berlios.de/; Components: base
 Name: {group}\FAQ; Filename: {app}\faq.pdf; Components: docs
 Name: {group}\FAQ (Deutsch); Filename: {app}\faq_de.pdf; Components: docs
 Name: {group}\FAQ (Español); Filename: {app}\faq_es.pdf; Components: docs
 Name: {group}\FAQ (Français); Filename: {app}\faq_fr.pdf; Components: docs
-Name: {commondesktop}\YajHFC fax client; Filename: javaw.exe; Parameters: "-jar ""{app}\yajhfc.jar"""; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
+
+
 [Registry]
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: instpath; ValueData: {app}; Flags: uninsdeletekey
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: jarfile; ValueData: yajhfc.jar; Flags: uninsdeletekey
-Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchparams; ValueData: "-jar ""{app}\yajhfc.jar"" --stdin --background"; Flags: uninsdeletekey; Components: redmon
+Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchparams; ValueData: "{#LaunchArgs} --stdin --background"; Flags: uninsdeletekey; Components: redmon
 Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Print\Monitors\{cm:redmonname}\Ports\YAJHFC:; Flags: uninsdeletekey dontcreatekey; Components: redmon
 
 [Components]
@@ -66,7 +130,7 @@ Filename: {app}\w98info.txt; Flags: shellexec; OnlyBelowVersion: 0,5.0; Componen
 [UninstallRun]
 Filename: rundll32; Components: redmon; Parameters: "printui.dll,PrintUIEntry /dl /n ""{cm:printername}"""; RunOnceId: DeletePrinter; MinVersion: 0,5.0
 [INI]
-Filename: {group}\Homepage.url; Section: InternetShortcut; Key: URL; String: http://www.yajhfc.de.vu/
+Filename: {group}\Homepage.url; Section: InternetShortcut; Key: URL; String: http://yajhfc.berlios.de/
 [UninstallDelete]
 Type: files; Name: {group}\Homepage.url
 [CustomMessages]

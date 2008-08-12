@@ -3,9 +3,6 @@
 # User configuration:
 # ###################
 
-# Path to the xmessage program:
-MESSAGEBOX=/usr/X11R6/bin/xmessage
-
 # Path to java:
 JAVA=/opt/java/bin/java
 
@@ -60,15 +57,6 @@ DEFAULTUSER=cupsfax
 #
 export PATH=$PATH:/usr/local/bin	# in case faxstat is in /usr/local/bin
 
-showError()
-{
-    # to the CUPS error log
-    echo "ERROR: $1" 1>&2
-
-    # to the user
-    sudo -H -u $USER $MESSAGEBOX "ERROR: $1"
-}
-
 # setup for invocation of X applications to 
 unset XAUTHORITY
 DISPLAY=:0.0
@@ -78,7 +66,7 @@ export DISPLAY
 # (serial devices are irrelevant here).
 
 if [ $# -eq 0 ]; then
-    for i in $JAVA $MESSAGEBOX ; do 
+    for i in $JAVA ; do 
         which $i >& /dev/null
 	if [ $? != 0 ]; then
 	    echo "ERROR: can't find HylaFAX program $i" 1>&2
@@ -127,31 +115,13 @@ else
 	#cat > $FAXNAME
 	FAXNAME="--stdin"
 fi
-
-# do some checking before continuing
-#
-which $MESSAGEBOX >& /dev/null
-if [ $? != 0 ] ; then
-    echo "ERROR: can't find executable $MESSAGEBOX" 1>&2
-    exit 1
-fi
-
-
-# These executables must be in the user's search path
-for i in $JAVA ; do
-    sudo -H -u $USER which $i >& /dev/null
-    if [ $? != 0 ]; then
-	showError "can't find HylaFAX program $i for user $USER; check execution search path"
-	exit 1
-    fi
-done
-    
+   
 # Use sudo to make sure that job is owned by the user that wants to "print",
 # not root. This is needed so that the owner of the job can remove it if 
 # needed.
 
-#m=`sudo -H -u $USER $JAVA -jar $FAXJAR $FAXNAME`
-m=`su -c "$JAVA -jar $FAXJAR $FAXNAME" $USER 2>&1`
+m=`sudo -H -u $USER $JAVA -jar $FAXJAR $FAXNAME`
+#m=`su -c "$JAVA -jar $FAXJAR $FAXNAME" $USER 2>&1`
 
 RC=$?
 case $RC in
