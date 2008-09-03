@@ -71,7 +71,12 @@ Set strSrc = WScript.StdIn
 Set strDst = java.StdIn
 
 Do While (java.Status = 0 and not strSrc.AtEndOfStream)
+	On Error Resume Next
 	strDst.Write strSrc.Read(4000)
+	if (err <> 0) then
+		Wscript.echo "Error #" & CStr(Err.Number) & ": " & Err.Description
+		Err.Clear
+	end if
 Loop
 strDst.Close
 
@@ -79,3 +84,8 @@ strDst.Close
 Do While (java.Status = 0)
 	WScript.Sleep(200)
 Loop
+
+' Copy eventual error messages
+'wscript.stdout.write java.stdout.readAll()
+'wscript.stderr.write java.stderr.readAll()
+
