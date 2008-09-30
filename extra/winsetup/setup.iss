@@ -20,21 +20,35 @@ Source: ..\..\..\workspace\yajhfc\doc\faq_de.pdf; DestDir: {app}; Components: do
 Source: ..\..\..\workspace\yajhfc\doc\faq_fr.pdf; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\doc\faq.pdf; DestDir: {app}; Components: docs
 Source: ..\icons\yajhfc.ico; DestDir: {app}; Components: base
+Source: execyajhfc.vbs; DestDir: {app}; Components: base
+; Redmon: Common files (docs):
 Source: printlaunch.vbs; DestDir: {app}; Components: redmon
-Source: redmon\enum.exe; DestDir: {app}\redmon; Components: redmon
-Source: redmon\FILE_ID.DIZ; DestDir: {app}\redmon; Components: redmon
 Source: redmon\LICENCE; DestDir: {app}\redmon; Components: redmon
 Source: redmon\README.TXT; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redfile.exe; DestDir: {app}\redmon; Components: redmon
 Source: redmon\redmon.hlp; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redmon35.dll; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redmon95.dll; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redmonnt.dll; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redpr.exe; DestDir: {app}\redmon; Components: redmon
-Source: redmon\redrun.exe; DestDir: {app}\redmon; Components: redmon
-Source: redmon\setup.exe; DestDir: {app}\redmon; Components: redmon
-Source: redmon\src.zip; DestDir: {app}\redmon; Components: redmon
-Source: redmon\unredmon.exe; DestDir: {app}\redmon; Components: redmon
+; Redmon: 32bit files
+Source: redmon\enum.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\FILE_ID.DIZ; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redfile.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redmon35.dll; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redmon95.dll; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redmonnt.dll; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redpr.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\redrun.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\setup.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\src.zip; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+Source: redmon\unredmon.exe; DestDir: {app}\redmon; Components: redmon; Check: not IsWin64
+; Redmon: 64bit files
+Source: redmon64\enum.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\FILE_ID.DIZ; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\redfile.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\redmonnt.dll; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\redpr.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\redrun.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\setup.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\src64.zip; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+Source: redmon64\unredmon.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
+
 Source: ..\..\..\workspace\yajhfc\COPYING; DestDir: {app}; Components: base
 Source: ..\..\..\workspace\yajhfc\README.txt; DestDir: {app}; Components: base
 Source: ..\..\..\workspace\yajhfc\README_de.txt; DestDir: {app}; Components: docs
@@ -88,16 +102,22 @@ UninstallDisplayName={#APPVERNAME}
 #ifdef WITHFOP
 OutputBaseFilename=Setup-FOPPlugin
 #endif
+ArchitecturesInstallIn64BitMode=x64
 
 #ifndef WITHFOP
  #define public LaunchArgs="-jar """"{app}\yajhfc.jar"""""
- #define public LaunchEXE="javaw.exe"
- #define public LaunchEXEArgs=LaunchArgs
+; #define public LaunchEXE="javaw.exe"
+; #define public LaunchEXEArgs=LaunchArgs
+ #define public LaunchEXEArgs=""
 #else
  #define public LaunchArgs="-cp """"" + ClassPath + ";{app}\yajhfc.jar"""" yajhfc.Launcher --loadplugin=""""{app}\FOPPlugin.jar"""""
- #define public LaunchEXE="{app}\yajhfc-fo.cmd"
- #define public LaunchEXEArgs=""
+; #define public LaunchEXE="{app}\yajhfc-fo.cmd"
+; #define public LaunchEXEArgs=""
+ #define public LaunchEXEArgs="--loadplugin=FOPPlugin.jar"
 #endif
+
+#define public LaunchEXE="{app}\execyajhfc.vbs"
+
 [Icons]
 Name: {group}\YajHFC fax client; Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs}"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
 Name: {group}\YajHFC fax client (debug mode); Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs} --debug --logfile=:prompt:"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base

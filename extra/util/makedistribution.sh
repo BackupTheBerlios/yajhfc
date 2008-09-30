@@ -4,7 +4,7 @@ EXTRADIR=~/java/yajhfc/extra
 WORKSPACE=~/java/workspace
 OUTPUT=~/java/yajhfc/temp
 
-ANT=/opt/apache-ant-1.7.1/bin/ant
+ANT=ant
 ISCC="wine \"C:\Program Files\Inno Setup 5\ISCC\""
 
 read YAJVER YAJVERDOT FOPVER FOPVERDOT  <<EOF

@@ -9,16 +9,41 @@
 ' *or* to ":registry:" to use the value from HKEY_LOCAL_MACHINE\Software\YajHFC\printlaunchparams
 Const yajhfcargs = ":registry:"
 
-' The Java executable. Using just "java.exe" should be fine in most cases.
-Const javaexe = "java.exe"
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' You usually should not need to edit below this line '''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Dim wshhell, userprofile, java, strSrc, strDst, homedrv, homedir, env, yjargs
+Dim wshhell, userprofile, java, strSrc, strDst, homedrv, homedir, env, yjargs, javaexe
 
 Set WshShell = WScript.CreateObject("WScript.Shell")
+
+function getJavaHome
+	dim javaver, result
+	getJavaHome = ""
+	on error resume next
+	err.clear
+	javaver = wshshell.RegRead("HKLM\SOFTWARE\JavaSoft\Java Runtime Environment\CurrentVersion")
+	if err = 0 and javaver <> "" then
+		result = wshshell.regread("HKLM\SOFTWARE\JavaSoft\Java Runtime Environment\" + javaver + "\JavaHome")
+		if (err = 0 and len(result) > 1) then
+		  dim lastchar
+		  lastchar = right(result, 1)
+		  if (lastchar <> "\" and lastchar <> "/") then
+		    result = result & "\"
+		  end if
+		  getJavaHome = result
+		end if
+	end if
+end function
+
+' Find out the location of java:
+javaexe = getJavaHome()
+if javaexe = "" then
+	MsgBox "Could not find the location where the Java Runtime Environment has been installed. Please check if Java is installed correctly.", vbCritical, "Start YajHFC"
+	WScript.Exit(1)
+end if
+javaexe = javaexe & "bin/java.exe"
 
 On Error Resume Next
 
