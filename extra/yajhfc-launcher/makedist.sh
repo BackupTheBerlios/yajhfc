@@ -19,5 +19,5 @@ done
 
 cd dist
 rm -f ../yajhfc-launcher.zip
-zip -r ../yajhfc-launcher.zip * -x 'CVS/*' -x '*/CVS/*'
+zip -r ../yajhfc-launcher.zip * -x 'CVS/*' -x '*/CVS/*' -x '*.old'
 
