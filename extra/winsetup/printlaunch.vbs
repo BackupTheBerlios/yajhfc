@@ -14,6 +14,8 @@ Const yajhfcargs = ":registry:"
 ' You usually should not need to edit below this line '''
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+const regkey = "HKCU\Software\YajHFC\"
+
 Dim wshhell, userprofile, java, strSrc, strDst, homedrv, homedir, env, yjargs, javaexe, fso
 
 Set WshShell = WScript.CreateObject("WScript.Shell")
@@ -50,33 +52,38 @@ On Error Resume Next
 
 set env = WshShell.Environment("PROCESS")
 
-' Try to get the correct user profile path from the registry
-homedrv =  wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEDRIVE")
-homedir = wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEPATH")
+' Check if execyajhfc has written the correct value for the user profile
+userprofile = wshshell.regread(regkey + "USERPROFILE")
+if (IsEmpty(userprofile)) then
+	
+	' Try to get the correct user profile path from the registry
+	homedrv =  wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEDRIVE")
+	homedir = wshshell.regread("HKEY_CURRENT_USER\Volatile Environment\HOMEPATH")
 
-haveRegistry = fso.FileExists(homedrv & homedir & "\ntuser.dat")
+	haveRegistry = fso.FileExists(homedrv & homedir & "\ntuser.dat")
 
-if (IsEmpty(homedrv) Or IsEmpty(homedir) or (not haveRegistry)) then
-	' Keys not found in Volatile Env., try the "hard way"
-	dim WshNet, WMIService, Account
-	Set WshNet = WScript.CreateObject("WScript.Network")
-	Set WMIService = GetObject("winmgmts:\\.\root\cimv2")
-	Set Account = WMIService.Get("Win32_UserAccount.Name='" & WshNet.UserName & "',Domain='" & WshNet.UserDomain & "'")
-
-	userprofile = WshShell.ExpandEnvironmentStrings(WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + Account.SID + "\ProfileImagePath"))
-	if (IsEmpty(userprofile)) then
-		' Probably domain name was empty, try to find it in registry
-		Set Account = WMIService.Get("Win32_UserAccount.Name='" & WshNet.UserName & "',Domain='" & _
-		wshshell.regread("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\CachePrimaryDomain") & "'")
+	if (IsEmpty(homedrv) Or IsEmpty(homedir) or (not haveRegistry)) then
+		' Keys not found in Volatile Env., try the "hard way"
+		dim WshNet, WMIService, Account
+		Set WshNet = WScript.CreateObject("WScript.Network")
+		Set WMIService = GetObject("winmgmts:\\.\root\cimv2")
+		Set Account = WMIService.Get("Win32_UserAccount.Name='" & WshNet.UserName & "',Domain='" & WshNet.UserDomain & "'")
 
 		userprofile = WshShell.ExpandEnvironmentStrings(WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + Account.SID + "\ProfileImagePath"))
-	end if
-else
-	' Fix some enviroment variables:
-	env("HOMEDRIVE") = homedrv
-	env("HOMEDIR") = homedir
+		if (IsEmpty(userprofile)) then
+			' Probably domain name was empty, try to find it in registry
+			Set Account = WMIService.Get("Win32_UserAccount.Name='" & WshNet.UserName & "',Domain='" & _
+			wshshell.regread("HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon\CachePrimaryDomain") & "'")
+	
+			userprofile = WshShell.ExpandEnvironmentStrings(WshShell.RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\" + Account.SID + "\ProfileImagePath"))
+		end if
+	else
+		' Fix some enviroment variables:
+		env("HOMEDRIVE") = homedrv
+		env("HOMEDIR") = homedir
 
-	userprofile = homedrv & homedir
+		userprofile = homedrv & homedir
+	end if
 end if
 
 if IsEmpty(UserProfile) or UserProfile = "" then
@@ -88,8 +95,14 @@ end if
 env("USERPROFILE") = userprofile
 
 ' Fix temp dir
-tmpdir  = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TMP"))
-tempdir = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TEMP"))
+tmpdir  = userprofile = wshshell.regread(regkey + "TMP") 'Check for value by execyajhfc
+if isEmpty(tmpdir) then
+	tmpdir  = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TMP"))
+end if
+tempdir  = userprofile = wshshell.regread(regkey + "TEMP") 'Check for value by execyajhfc
+if isEmpty(tempdir) then
+	tempdir = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TEMP"))
+end if
 
 if fso.FolderExists(tmpdir) then
 	env("TMP") = tmpdir

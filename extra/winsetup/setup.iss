@@ -19,6 +19,9 @@ Source: ..\..\..\workspace\yajhfc\doc\faq_es.pdf; DestDir: {app}; Components: do
 Source: ..\..\..\workspace\yajhfc\doc\faq_de.pdf; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\doc\faq_fr.pdf; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\doc\faq.pdf; DestDir: {app}; Components: docs
+Source: ..\..\..\workspace\yajhfc\doc\faq_ru.pdf; DestDir: {app}; Components: docs
+Source: ..\..\..\workspace\yajhfc\doc\faq_tr.pdf; DestDir: {app}; Components: docs
+
 Source: ..\icons\yajhfc.ico; DestDir: {app}; Components: base
 Source: execyajhfc.vbs; DestDir: {app}; Components: base
 ; Redmon: Common files (docs):
@@ -54,6 +57,8 @@ Source: ..\..\..\workspace\yajhfc\README.txt; DestDir: {app}; Components: base
 Source: ..\..\..\workspace\yajhfc\README_de.txt; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\README_es.txt; DestDir: {app}; Components: docs
 Source: ..\..\..\workspace\yajhfc\README_fr.txt; DestDir: {app}; Components: docs
+Source: ..\..\..\workspace\yajhfc\README_ru.txt; DestDir: {app}; Components: docs
+Source: ..\..\..\workspace\yajhfc\README_tr.txt; DestDir: {app}; Components: docs
 Source: w98info.txt; DestDir: {app}; OnlyBelowVersion: 0,5.0; Components: redmon; Tasks: 
 Source: ..\cover\Coverpage example.html; DestDir: {app}\examples; Components: docs
 #ifndef WITHFOP
@@ -105,7 +110,7 @@ OutputBaseFilename=Setup-FOPPlugin
 ArchitecturesInstallIn64BitMode=x64
 
 #ifndef WITHFOP
- #define public LaunchArgs="-jar """"{app}\yajhfc.jar"""""
+  #define public LaunchArgs="-jar """"{app}\yajhfc.jar"""""
 ; #define public LaunchEXE="javaw.exe"
 ; #define public LaunchEXEArgs=LaunchArgs
  #define public LaunchEXEArgs=""
@@ -119,9 +124,9 @@ ArchitecturesInstallIn64BitMode=x64
 #define public LaunchEXE="{app}\execyajhfc.vbs"
 
 [Icons]
-Name: {group}\YajHFC fax client; Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs}"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
-Name: {group}\YajHFC fax client (debug mode); Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs} --debug --logfile=:prompt:"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
-Name: {commondesktop}\YajHFC fax client; Filename: "{#LaunchEXE}"; Parameters: "{#LaunchEXEArgs}"; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
+Name: {group}\YajHFC fax client; Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs}; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {group}\YajHFC fax client (debug mode); Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs} --debug --logfile=:prompt:; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {commondesktop}\YajHFC fax client; Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
 #ifdef WITHFOP
 Name: {group}\FOPPlugin README; Filename: {app}\readme.pdf
 #endif
@@ -130,7 +135,8 @@ Name: {group}\FAQ; Filename: {app}\faq.pdf; Components: docs
 Name: {group}\FAQ (Deutsch); Filename: {app}\faq_de.pdf; Components: docs
 Name: {group}\FAQ (Español); Filename: {app}\faq_es.pdf; Components: docs
 Name: {group}\FAQ (Français); Filename: {app}\faq_fr.pdf; Components: docs
-
+Name: {group}\FAQ (Türkçe); Filename: {app}\faq_tr.pdf; Components: docs
+Name: {group}\FAQ (Russian); Filename: {app}\faq_ru.pdf; Components: docs
 
 [Registry]
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: instpath; ValueData: {app}; Flags: uninsdeletekey

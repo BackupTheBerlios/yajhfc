@@ -4,10 +4,11 @@
 ' With all other versions of Windows the effect of this script should be roughly equivalent
 ' to invoking "javaw -jar yajhfc.jar"
 
-dim wshshell, javahome, classpath, fso, launchargs, cmdline
+dim wshshell, javahome, classpath, fso, launchargs, cmdline, env
 
 const jarname = "yajhfc.jar"
 const launchclass = "yajhfc.Launcher"
+const regkey = "HKCU\Software\YajHFC\"
 
 Set wshshell = WScript.CreateObject("WScript.Shell")
 Set fso = WScript.CreateObject("Scripting.FileSystemObject")
@@ -34,8 +35,15 @@ end function
 javahome = getJavaHome()
 if javahome = "" then
 	MsgBox "Could not find the location where the Java Runtime Environment has been installed. Please check if Java is installed correctly.", vbCritical, "Start YajHFC"
-	WScript.Exit(1)
+	WScript.Quit(1)
 end if
+
+on error resume next
+' Save the correct values for user profile and TEMP for the print launcher
+set env = WshShell.Environment("PROCESS")
+WshShell.RegWrite regkey & "USERPROFILE", env("USERPROFILE"), "REG_SZ"
+WshShell.RegWrite regkey & "TMP", env("TMP"), "REG_SZ"
+WshShell.RegWrite regkey & "TEMP", env("TEMP"), "REG_SZ"
 
 on error goto 0
 ' Set current directory to app directory:
@@ -43,8 +51,7 @@ wshshell.CurrentDirectory = fso.getParentFolderName(WScript.ScriptFullName)
 
 ' Add all files in the "lib" sub-directory to the class path
 if (fso.FolderExists("lib")) then
-  dim libs,env
-  set env = WshShell.Environment("PROCESS")
+  dim libs
   classpath = env("CLASSPATH")
 
   set libs = fso.getFolder("lib")
@@ -64,7 +71,7 @@ else
 end if
 
 
-cmdline = """" + javahome & "bin\javaw.exe"" " & launchargs & " "
+cmdline = """" & javahome & "bin\javaw.exe"" " & launchargs & " "
 
 ' Append any command line arguments
 set args = WScript.Arguments
