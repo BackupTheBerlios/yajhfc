@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+YajHFC-Plugin-InitClass: yajhfc.settingstool.EntryPoint
+Class-Path: yajhfc.jar
+Main-Class: yajhfc.settingstool.EntryPoint
