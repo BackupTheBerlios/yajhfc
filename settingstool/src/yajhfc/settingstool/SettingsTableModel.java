@@ -41,7 +41,7 @@ public class SettingsTableModel extends AbstractTableModel {
         try {
             return fieldDescriptions.getString(f.getName());
         } catch (Exception e) {
-            return f.getName();
+            return _("N/A");
         }
     }
     
@@ -68,7 +68,7 @@ public class SettingsTableModel extends AbstractTableModel {
         
         fireTableDataChanged();
     }
-
+    
     public void loadFromProperties(Properties p) {
         fo.loadFromProperties(p);
         for (Setting s : availableSettings) {
