@@ -58,7 +58,7 @@ if (fso.FolderExists("lib")) then
   for each file in libs.files
     if len(file) > 4 then
       if lcase(right(file, 4)) = ".jar" then
-        classpath = classpath & ";lib\" & file
+        classpath = classpath & ";" & file
       end if
     end if
   next

@@ -95,11 +95,11 @@ end if
 env("USERPROFILE") = userprofile
 
 ' Fix temp dir
-tmpdir  = userprofile = wshshell.regread(regkey + "TMP") 'Check for value by execyajhfc
+tmpdir = wshshell.regread(regkey + "TMP") 'Check for value by execyajhfc
 if isEmpty(tmpdir) then
 	tmpdir  = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TMP"))
 end if
-tempdir  = userprofile = wshshell.regread(regkey + "TEMP") 'Check for value by execyajhfc
+tempdir = wshshell.regread(regkey + "TEMP") 'Check for value by execyajhfc
 if isEmpty(tempdir) then
 	tempdir = WshShell.ExpandEnvironmentStrings(wshshell.regread("HKEY_CURRENT_USER\Environment\TEMP"))
 end if
@@ -115,6 +115,9 @@ on error goto 0
 
 if yajhfcargs = ":registry:" then
 	yjargs = wshshell.regread("HKLM\Software\YajHFC\printlaunchparams")
+	on error resume next
+	yjargs = yjargs & " " & wshshell.regread("HKLM\Software\YajHFC\printlaunchyajhfcparams")
+	on error goto 0
 else
 	yjargs = yajhfcargs
 end if

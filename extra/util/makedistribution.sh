@@ -36,3 +36,12 @@ cp $WORKSPACE/FOPPlugin/build/FOPPlugin-src.zip $OUTPUT/FOPPlugin-$FOPVER-src.zi
 cp $EXTRADIR/winsetup/Output/setup.exe $OUTPUT/yajhfc-$YAJVER-setup.exe
 cp $EXTRADIR/winsetup/Output/Setup-FOPPlugin.exe $OUTPUT/yajhfc-$YAJVER-FOPPlugin-$FOPVER-setup.exe
 
+cat <<EOF > $OUTPUT/updateinfo.xml
+<?xml version="1.0"?>
+<yajhfcupdatefile>
+	<currentVersion>$YAJVERDOT</currentVersion>
+	<releaseDate>`date +%Y-%m-%d`</releaseDate>
+	<infoURL>http://yajhfc.berlios.de/</infoURL>
+</yajhfcupdatefile>
+EOF
+
