@@ -1,10 +1,5 @@
 #!/bin/sh
 
-if [ -z $1 ]; then
-	echo "Usage: $0 lang"
-	exit 1 ;
-fi
-
 WORKSPACE=~/java/workspace
 
 makepack() {
@@ -28,19 +23,19 @@ makepack() {
 
   FILES="yajhfc/src/yajhfc/i18n/messages_$1.po"
 
-  if [ -f $LOCCMDLINEOPTS -a $CMDLINEOPTS -nt $LOCCMDLINEOPTS ]; then
+  if [ "$INCLCMDLINEOPTS" != "n" -a -f $LOCCMDLINEOPTS ]; then
      FILES="$FILES $LOCCMDLINEOPTS"
   fi
 
-  if [ -f $LOCREADME -a $README -nt $LOCREADME ]; then
+  if [ "$INCLREADME" != "n" -a  -f $LOCREADME ]; then
      FILES="$FILES $README $LOCREADME"
   fi
 
-  if [ -f $LOCFOPMSG -a $FOPMSG -nt $LOCFOPMSG ]; then
-     FILES="$FILES $FOPMSG $LOCFOPMSG"
+  if [ "$INCLFOPMSG" != "n" -a -f $LOCFOPMSG ]; then
+     FILES="$FILES $LOCFOPMSG"
   fi
 
-  if [ -z "$NOFAQ" -a -f $LOCFAQ -a $FAQ -nt $LOCFAQ ]; then
+  if [ "$INCLFAQ"!="n" -a -f $LOCFAQ ]; then
      FILES="$FILES $FAQ $LOCFAQ yajhfc/doc/faq-src/faq.pdf yajhfc/doc/faq-src/faq_$1.pdf"
   fi
 
@@ -49,15 +44,18 @@ makepack() {
   echo "Output has been written to $OUT"
 }
 
-if [ $1 = all ]; then
-  for PO in $WORKSPACE/yajhfc/src/yajhfc/i18n/messages_*.po ; do
+read -p 'Include FAQ? [y/n]' INCLFAQ
+read -p 'Include CommandLineOpts? [y/n]' INCLCMDLINEOPTS
+read -p 'Include README? [y/n]' INCLREADME
+read -p 'Include FOP Msg? [y/n]' INCLFOPMSG
+
+
+for PO in $WORKSPACE/yajhfc/src/yajhfc/i18n/messages_*.po ; do
         LANG=${PO##*messages_}
         LANG=${LANG%.po}
 	
 	echo "Creating Pack for language $LANG..."
 	makepack $LANG
-  done
-else 
-  makepack $1
-fi
+done
+
 

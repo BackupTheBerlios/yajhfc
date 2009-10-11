@@ -24,8 +24,15 @@ cd $WORKSPACE/FOPPlugin
 $ANT clean fulldist
 echo "Building Windows Setup..."
 cd $EXTRADIR/winsetup
-eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT setup.iss
-eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT /dWITHFOP setup.iss
+
+READMES=""
+for R in $WORKSPACE/yajhfc/README*.txt; do
+  READMES="$READMES $R temp/`basename $R`"
+done
+windowsify -i utf-8 -o utf-8 $READMES 
+
+eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT setup2.iss
+eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT /dWITHFOP setup2.iss
 
 echo "Copying files to output..."
 cp $WORKSPACE/yajhfc/build/yajhfc.jar $OUTPUT/yajhfc-$YAJVER.jar
@@ -36,7 +43,7 @@ cp $WORKSPACE/FOPPlugin/build/FOPPlugin-src.zip $OUTPUT/FOPPlugin-$FOPVER-src.zi
 cp $EXTRADIR/winsetup/Output/setup.exe $OUTPUT/yajhfc-$YAJVER-setup.exe
 cp $EXTRADIR/winsetup/Output/Setup-FOPPlugin.exe $OUTPUT/yajhfc-$YAJVER-FOPPlugin-$FOPVER-setup.exe
 
-cat <<EOF > $OUTPUT/updateinfo.xml
+cat <<EOF > $OUTPUT/versioninfo.xml
 <?xml version="1.0"?>
 <yajhfcupdatefile>
 	<currentVersion>$YAJVERDOT</currentVersion>

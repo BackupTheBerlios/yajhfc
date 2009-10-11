@@ -1,4 +1,4 @@
-#ifndef VERSION
+﻿#ifndef VERSION
  #define public VERSION "0.3.7"
 #endif
 #ifndef FOPVersion
@@ -53,12 +53,12 @@ Source: redmon64\src64.zip; DestDir: {app}\redmon; Components: redmon; Check: Is
 Source: redmon64\unredmon.exe; DestDir: {app}\redmon; Components: redmon; Check: IsWin64
 
 Source: ..\..\..\workspace\yajhfc\COPYING; DestDir: {app}; Components: base
-Source: ..\..\..\workspace\yajhfc\README.txt; DestDir: {app}; Components: base
-Source: ..\..\..\workspace\yajhfc\README_de.txt; DestDir: {app}; Components: docs
-Source: ..\..\..\workspace\yajhfc\README_es.txt; DestDir: {app}; Components: docs
-Source: ..\..\..\workspace\yajhfc\README_fr.txt; DestDir: {app}; Components: docs
-Source: ..\..\..\workspace\yajhfc\README_ru.txt; DestDir: {app}; Components: docs
-Source: ..\..\..\workspace\yajhfc\README_tr.txt; DestDir: {app}; Components: docs
+Source: temp\README.txt; DestDir: {app}; Components: base
+Source: temp\README_de.txt; DestDir: {app}; Components: docs
+Source: temp\README_es.txt; DestDir: {app}; Components: docs
+Source: temp\README_fr.txt; DestDir: {app}; Components: docs
+Source: temp\README_ru.txt; DestDir: {app}; Components: docs
+Source: temp\README_tr.txt; DestDir: {app}; Components: docs
 Source: w98info.txt; DestDir: {app}; OnlyBelowVersion: 0,5.0; Components: redmon; Tasks: 
 Source: ..\cover\Coverpage example.html; DestDir: {app}\examples; Components: docs
 #ifndef WITHFOP
@@ -94,10 +94,10 @@ Source: {#FOPDIR}\lib\{#FileName}; DestDir: {app}\lib; Components: base
 
 Source: c:\programme\istool\isxdl.dll; DestDir: {tmp}; Flags: dontcopy
 [Setup]
-AppCopyright=� 2005-2008 by Jonas Wolz
+AppCopyright=© 2005-2009 by Jonas Wolz
 AppName={#APPNAME}
 AppVerName={#APPVERNAME}
-InfoBeforeFile=..\..\..\workspace\yajhfc\README.txt
+InfoBeforeFile=temp\README.txt
 LicenseFile=..\..\..\workspace\yajhfc\COPYING
 DefaultDirName={pf}\YajHFC
 DefaultGroupName=YajHFC
@@ -118,18 +118,18 @@ ArchitecturesInstallIn64BitMode=x64
 ; #define public LaunchEXEArgs=LaunchArgs
  #define public LaunchEXEArgs=""
 #else
- #define public LaunchArgs="-cp """"" + ClassPath + ";{app}\yajhfc.jar"""" yajhfc.Launcher --loadplugin=""""{app}\FOPPlugin.jar"""""
+ #define public LaunchArgs="-cp """"" + ClassPath + ";{app}\yajhfc.jar"""" yajhfc.Launcher --loadplugin """"{app}\FOPPlugin.jar"""""
 ; #define public LaunchEXE="{app}\yajhfc-fo.cmd"
 ; #define public LaunchEXEArgs=""
- #define public LaunchEXEArgs="--loadplugin=FOPPlugin.jar"
+ #define public LaunchEXEArgs="--loadplugin """"{app}\FOPPlugin.jar"""""
 #endif
 
 #define public LaunchEXE="{app}\execyajhfc.vbs"
 
 [Icons]
-Name: {group}\{cm:YajHFCName}; Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs}; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
-Name: {group}\{cm:YajHFCName} ({cm:debugmode}); Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs} --debug --logfile=:prompt:; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
-Name: {commondesktop}\{cm:YajHFCName}; Filename: {#LaunchEXE}; Parameters: {#LaunchEXEArgs}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
+Name: {group}\{cm:YajHFCName}; Filename: {#LaunchEXE}; Parameters: "{#LaunchEXEArgs}"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {group}\{cm:YajHFCName} ({cm:debugmode}); Filename: {#LaunchEXE}; Parameters: "{#LaunchEXEArgs} --debug --logfile=:prompt:"; WorkingDir: {app}; IconFilename: {app}\yajhfc.ico; IconIndex: 0; Components: base
+Name: {commondesktop}\{cm:YajHFCName}; Filename: {#LaunchEXE}; Parameters: "{#LaunchEXEArgs}"; IconFilename: {app}\yajhfc.ico; IconIndex: 0; WorkingDir: {app}; Tasks: DesktopIcon
 #ifdef WITHFOP
 Name: {group}\FOPPlugin README; Filename: {app}\readme.pdf
 #endif
@@ -144,7 +144,8 @@ Name: {group}\FAQ ({cm:Turkish}); Filename: {app}\faq_tr.pdf; Components: docs
 [Registry]
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: instpath; ValueData: {app}; Flags: uninsdeletekey
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: jarfile; ValueData: yajhfc.jar; Flags: uninsdeletekey
-Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchparams; ValueData: "{#LaunchArgs} --stdin --background"; Flags: uninsdeletekey; Components: redmon
+Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchparams; ValueData: "{#LaunchArgs}"; Flags: uninsdeletekey; Components: redmon
+Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchyajhfcparams; ValueData: "--stdin --background"; Flags: createvalueifdoesntexist uninsdeletekey; Components: redmon
 Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Print\Monitors\{cm:redmonname}\Ports\YAJHFC:; Flags: uninsdeletekey dontcreatekey; Components: redmon
 
 [Components]
@@ -154,10 +155,12 @@ Name: Redmon; Description: {cm:InstallFaxPrinter}; Types: full
 [Run]
 Filename: {app}\redmon\setup.exe; WorkingDir: {app}\redmon; StatusMsg: {cm:InstallingX,RedMon}; Components: redmon; Check: RedmonNotInstalled; Parameters: /Q
 Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""Apple LaserWriter 16/600 PS"""; Components: redmon; StatusMsg: {cm:InstallingX,{cm:faxprinter}}; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,5.0; OnlyBelowVersion: 0,6.0
-Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""FX DP 305-AP PS"""; Components: redmon; StatusMsg: {cm:InstallingX,{cm:faxprinter}}; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,6.0; Tasks: 
+Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""FX DP 305-AP PS"""; Components: redmon; StatusMsg: {cm:InstallingX,{cm:faxprinter}}; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,6.0; OnlyBelowVersion: 0,6.01
+Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""Xerox Phaser 6120 PS"""; Components: redmon; StatusMsg: {cm:InstallingX,{cm:faxprinter}}; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,6.01;
+
 Filename: {app}\w98info.txt; Flags: shellexec; OnlyBelowVersion: 0,5.0; Components: redmon
-Filename: {code:GSSetupPath}; Check: InstallGS; Parameters: -auto
-Filename: {code:TIFFSetupPath}; Check: InstallTIFF; Parameters: /SILENT
+Filename: {code:GSSetupPath}; Check: InstallGS; StatusMsg: {cm:InstallingX,GhostScript}; Parameters: -auto
+Filename: {code:TIFFSetupPath}; Check: InstallTIFF; StatusMsg: {cm:InstallingX,tiff2pdf}; Parameters: /SILENT
 [UninstallRun]
 Filename: rundll32; Components: redmon; Parameters: "printui.dll,PrintUIEntry /dl /n ""{cm:printername}"""; RunOnceId: DeletePrinter; MinVersion: 0,5.0
 [INI]
@@ -165,47 +168,109 @@ Filename: {group}\Homepage.url; Section: InternetShortcut; Key: URL; String: htt
 [UninstallDelete]
 Type: files; Name: {group}\Homepage.url
 Type: files; Name: {app}\settings.default
+Type: files; Name: {app}\tiff2pdf.cmd
+
 [CustomMessages]
 ; Do not translate redmonname
 redmonname=Redirected Port
 
 ; May be translated
 printername=YajHFC Fax
+DebugMode=debug mode
+YajHFCName=YajHFC fax client
+
+; English/Default text:
 InstallFaxPrinter=Install a fax printer
 InstallingX=Installing %1...
 FaxPrinter=fax printer
 CoreApplicationFiles=Core application files
 Documentation=Documentation
-YajHFCName=YajHFC fax client
-DebugMode=debug mode
+InstallGSTask=Download and install GhostScript (if not already installed)
+InstallTIFFTask=Download and install tiff2pdf (if not already installed)
+PreserveDLMsg=Save downloaded files on the desktop?
+
+; German translation:
+de.InstallFaxPrinter=Einen Faxdrucker installieren
+de.InstallingX=Installiere %1...
+de.FaxPrinter=Faxdrucker
+de.CoreApplicationFiles=Zentrale Programmdateien
+de.Documentation=Dokumentation
+de.InstallGSTask=GhostScript herunterladen und installieren (falls noch nicht installiert)
+de.InstallTIFFTask=tiff2pdf herunterladen und installieren (falls noch nicht installiert)
+de.PreserveDLMsg=Heruntergeladene Dateien auf dem Desktop speichern?
+
+; Spanish translation:
+es.InstallFaxPrinter=Instalar una impresora de faxes
+es.InstallingX=Instalando %1...
+es.FaxPrinter=impresora de faxes
+es.CoreApplicationFiles=Archivos principales de la aplicación
+es.Documentation=Documentación
+es.InstallGSTask=Descargar e instalar GhostScript (si no se encuentra instalado)
+es.InstallTIFFTask=Descargar e instalar tiff2pdf (si no se encuentra instalado)
+es.PreserveDLMsg=¿Guardar los archivos descargados en el escritorio?
+
+; Polish translation
+pl.InstallFaxPrinter=Zainstaluj drukarkę faksów
+pl.InstallingX=Zainstalowano %1...
+pl.FaxPrinter=Drukarka faksów
+pl.CoreApplicationFiles=Główne pliki aplikacji
+pl.Documentation=Dokumentacja
+pl.InstallGSTask=Pobierz i zainstaluj GhostScript (jeżeli nie zainstalowany)
+pl.InstallTIFFTask=Pobierz i zainstaluj tiff2pdf (jeżeli nie zainstalowany)
+pl.PreserveDLMsg=Zapisać pobrane pliki na pulpicie?
+
+; Italian translation:
+it.InstallFaxPrinter=Installa una stampante fax
+it.InstallingX=Installazione %1...
+it.FaxPrinter=stampante fax
+it.CoreApplicationFiles=File applicativi di base
+it.Documentation=Documentazione
+it.InstallGSTask=Scarica e installa GhostScript (se non già installato)
+it.InstallTIFFTask=Scarica e installa tiff2pdf (se non già installato)
+it.PreserveDLMsg=Salvo i file scaricati sul Desktop?
+
+; French translation:
+fr.InstallFaxPrinter=Installer une imprimante Fax
+fr.InstallingX=Installation %1...
+fr.FaxPrinter=imprimante fax
+fr.CoreApplicationFiles=Fichier application (Core)
+fr.Documentation=Documentation
+fr.InstallGSTask=Téléchargement et installation de GhostScript (Si pas déjà installé)
+fr.InstallTIFFTask=Téléchargement et installation de tiff2pdf (Si pas déjà installé)
+fr.PreserveDLMsg=Enregistrer les fichiers téléchargés sur le bureau?
+
+; Russian translation:
+ru.InstallFaxPrinter=Установить факс-принтер
+ru.InstallingX=Устанавливается %1...
+ru.FaxPrinter=факс-принтер
+ru.CoreApplicationFiles=Базовые компоненты программы
+ru.Documentation=Документация
+ru.InstallGSTask=Загрузить и установить GhostScript (если еще не установлен)
+ru.InstallTIFFTask=Загрузить и установить tiff2pdf (если еще не установлен)
+ru.PreserveDLMsg=Сохранить загруженные файлы на рабочем столе?
+
 
 ; Native names for the languages (so do not translate them either):
-; "Deutsch" is fully ASCII, so no need for two versions
 German=Deutsch
-; "English" too
 English=English
-; Language names for cp 1252
-Spanish=Espa�ol
-French=Fran�ais
-Turkish=T�rk�e
-Russian=Russkij
-; Language names for cp 1251
-ru.Spanish=Espanol
-ru.French=Francais
-ru.Turkish=Turkce
-ru.Russian=�������
+Spanish=Español
+French=Français
+Turkish=Türkçe
+Russian=Русский
+
 [Tasks]
 Name: DesktopIcon; Description: {cm:CreateDesktopIcon}; Components: base
-Name: GhostScript; Description: Download and install GhostScript; Components: base; Flags: checkedonce
-Name: tiff2pdf; Description: Download and install tiff2pdf; Components: base; Flags: checkedonce
+Name: GhostScript; Description: {cm:InstallGSTask}; Components: base
+Name: tiff2pdf; Description: {cm:InstallTIFFTask}; Components: base
 [Languages]
 Name: en; MessagesFile: compiler:Default.isl
-Name: de; MessagesFile: compiler:Languages\German.isl
-Name: fr; MessagesFile: compiler:Languages\French.isl
-Name: es; MessagesFile: compiler:Languages\Spanish.isl
+Name: de; MessagesFile: compiler:Languages\German.isl; InfoBeforeFile: temp\README_de.txt
+Name: fr; MessagesFile: compiler:Languages\French.isl; InfoBeforeFile: temp\README_fr.txt
+Name: es; MessagesFile: compiler:Languages\Spanish.isl; InfoBeforeFile: temp\README_es.txt
 Name: it; MessagesFile: compiler:Languages\Italian.isl
-Name: ru; MessagesFile: compiler:Languages\Russian.isl
-Name: tr; MessagesFile: compiler:Languages\Turkish.isl
+Name: pl; MessagesFile: compiler:Languages\Polish.isl
+Name: ru; MessagesFile: compiler:Languages\Russian.isl; InfoBeforeFile: temp\README_ru.txt
+Name: tr; MessagesFile: compiler:Languages\Turkish.isl; InfoBeforeFile: temp\README_tr.txt
 [Code]
 var bInstallGS: boolean;
     bInstallTIFF: boolean;
@@ -213,9 +278,9 @@ var bInstallGS: boolean;
     sTIFFSetupPath:string;
     preserveDownload: integer;
 const
-    ghostscript32path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs863w32.exe';
-    ghostscript64path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs863w64.exe';
-    ghostscriptdllkey = 'SOFTWARE\GPL Ghostscript\8.63';
+    ghostscript32path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs864w32.exe';
+    ghostscript64path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs864w64.exe';
+    ghostscriptdllkey = 'SOFTWARE\GPL Ghostscript';
     tiffkey = 'SOFTWARE\GnuWin32\Tiff';
     tiffpath = 'http://downloads.sourceforge.net/sourceforge/gnuwin32/tiff-3.8.2-1.exe';
     setupsig = '# Auto-generated by YajHFC setup. Remove this line if you manually edit this file, else it will get overwritten on a update';
@@ -300,11 +365,11 @@ begin
 end;
 
 
-procedure isxdl_AddFile(URL, Filename: PChar);
+procedure isxdl_AddFile(URL, Filename: PAnsiChar);
 external 'isxdl_AddFile@files:isxdl.dll stdcall';
 function isxdl_DownloadFiles(hWnd: Integer): Integer;
 external 'isxdl_DownloadFiles@files:isxdl.dll stdcall';
-function isxdl_SetOption(Option, Value: PChar): Integer;
+function isxdl_SetOption(Option, Value: PAnsiChar): Integer;
 external 'isxdl_SetOption@files:isxdl.dll stdcall';
 
 function InstallGS(): boolean;
@@ -344,7 +409,7 @@ begin
 		   
 		   if preserveDownload = -1 then
 		   begin
-		       case MsgBox('Preserve downloaded files (save on the desktop)?', mbConfirmation, MB_YESNOCANCEL) of
+		       case MsgBox(CustomMessage('PreserveDLMsg'), mbConfirmation, MB_YESNOCANCEL) of
            IDYES:
 		          preserveDownload := 1;
 		       IDNO:
@@ -366,29 +431,64 @@ begin
 	end
 end;
 
-function getGSEXE(): string;
+function getGSEXE2(const RootKey: integer): string;
 var
   path: string;
+  subkeys: TArrayOfString;
+  i: integer;
 begin
   result := '';
-  if RegQueryStringValue(HKEY_LOCAL_MACHINE, ghostscriptdllkey, 'GS_DLL', path) then
+  if RegGetSubkeyNames(RootKey, ghostscriptdllkey, subkeys) then
   begin
-    result := extractFileDir(path) + '\gswin32c.exe';
-    if is64BitInstallMode() then
+    // Test if any of the keys exist starting from the back to hopefully get newer versions first
+    for I := GetArrayLength(subkeys)-1 downto 0 do
     begin
-      if not FileExists(result) then
-        result := extractFileDir(path) + '\gswin64c.exe'
+      if RegQueryStringValue(RootKey, ghostscriptdllkey + '\' + subkeys[i], 'GS_DLL', path) then
+      begin
+        result := extractFileDir(path) + '\gswin32c.exe';
+        if FileExists(result) then
+        begin
+           log('Found GhostScript at: ' + result);
+           exit;
+        end
+        else
+          if is64BitInstallMode() then
+          begin
+              result := extractFileDir(path) + '\gswin64c.exe'
+              if FileExists(result) then
+              begin
+                log('Found GhostScript at: ' + result);
+                exit;
+              end;
+          end;
+      end;
     end;
   end;
 end;
 
-function getTIFFEXE(): string;
+function getGSEXE(): string;
+begin
+  result := getGSEXE2(HKEY_LOCAL_MACHINE);
+  if Is64BitInstallMode() then
+     if (result = '') or not FileExists(result) then
+       result := getGSEXE2(HKEY_LOCAL_MACHINE_32);
+end;
+
+function getTIFFEXE2(const RootKey: integer): string;
 var
   path: string;
 begin
   result := '';
-  if RegQueryStringValue(HKEY_LOCAL_MACHINE, tiffkey, 'InstallPath', path) then
+  if RegQueryStringValue(RootKey, tiffkey, 'InstallPath', path) then
     result := addbackslash(path) + 'bin\tiff2pdf.exe'
+end;
+
+function getTIFFEXE(): string;
+begin
+  result := getTIFFEXE2(HKEY_LOCAL_MACHINE);
+  if Is64BitInstallMode() then
+     if (result = '') or not FileExists(result) then
+       result := getTIFFEXE2(HKEY_LOCAL_MACHINE_32);
 end;
 
 function DownloadFiles(): boolean;
@@ -460,6 +560,27 @@ begin
 		result := (downloadNeeded >= 0);
 end;
 
+procedure CheckTIFF2PDFWorkaround(var tiffExe:string);
+var tiffExeOrig: string;
+    lines: TArrayOfString;
+begin
+    if (GetWindowsVersion shr 24) >= 6 then // On Vista or Win7
+    begin
+      log('Need tiff2pdf work around...');
+      tiffExeOrig := tiffExe;
+      tiffExe     := ExpandConstant('{app}\tiff2pdf.cmd');
+      setArrayLength(lines, 5);
+      
+      lines[0] := '@echo off';
+      lines[1] := 'rem This batch file is used to work around a bug in tiff2pdf 3.8.2 on Vista + Win 7';
+      lines[2] := '"' + tiffExeOrig + '" -o "%tmp%\tiff2pdf.tmp" %*';
+      lines[3] := 'type "%tmp%\tiff2pdf.tmp"';
+      lines[4] := 'del "%tmp%\tiff2pdf.tmp"';
+      
+      SaveStringsToFile(tiffExe, lines, false);
+    end;
+end;
+
 procedure WriteSettingsDefault();
 var
   tiffExe, gsExe: string;
@@ -479,10 +600,12 @@ begin
       exit;
   end;
 
+  log('Writing settings.default...');
   setArrayLength(lines, 6);
   lines[0] := setupsig;
   if (tiffExe <> '') and fileexists(tiffExe) then
   begin
+    CheckTIFF2PDFWorkaround(tiffExe);
     StringChangeEx(tiffExe, '\', '\\', true);
     StringChangeEx(tiffExe, ':', '\:', true);
     lines[1] := 'tiff2PDFLocation=' + tiffExe;
@@ -504,7 +627,10 @@ begin
     lines[4] := 'alwaysCreateTargetFormat=true';
     lines[5] := 'multiFileSendMode=EXCEPT_COVER';
     saveStringsToFile(settingsFile, lines, true);
-  end;
+    log('settings.default written.');
+  end
+  else
+    log('settings.default NOT written.');
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -528,3 +654,7 @@ begin
 	end;
 
 end;
+
+
+
+
