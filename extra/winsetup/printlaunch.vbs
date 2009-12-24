@@ -122,6 +122,17 @@ else
 	yjargs = yajhfcargs
 end if
 
+' Append any command line arguments
+set args = WScript.Arguments
+For I = 0 to args.Count - 1
+   arg = args(I)
+   if InStr(arg, " ") > 0 then
+      	yjargs = yjargs & " """ & args(I) & """"
+   else 
+	yjargs = yjargs & " " & args(I)
+   end if
+Next
+
 ' Launch java:
 Set java = WshShell.Exec("""" & javaexe & """ -Duser.home=""" & userprofile & """ " & yjargs)
 
