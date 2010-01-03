@@ -1,0 +1,23 @@
+yajhfc-faxprinter for Debian/Ubuntu
+-----------------------------------
+
+This package automatically installs a virtual fax printer named "yajhfc" in CUPS.
+
+In order for this printer to work YajHFC must be auto started and kept running
+for every user wishing to print.
+
+To achieve this, a .desktop file is added to /etc/xdg/autostart to ensure YajHFC
+is auto started by any desktop environment implementing the Free Desktop Menu Specification
+(this includes at least KDE, GNOME and XFCE).
+If your preferred desktop environment does not use these files, it is your responsibility
+to make sure YajHFC is running when you wish to print.
+
+Printing works by a special CUPS backend (named "yajhfc") that looks for a named pipe called 
+/tmp/yajhfc-$USERNAME to send the PostScript data to YajHFC.
+This package makes sure that this named pipe is enabled by setting the appropriate settings
+in /etc/yajhfc/settings.override.
+If this file does not exist (e.g. because YajHFC is not running), the print data is
+discarded without reporting back an error to CUPS to avoid accumulating too many jobs 
+in the queue.
+
+ -- Jonas Wolz <jonas.wolz@freenet.de>  Fri, 01 Jan 2010 17:00:00 +0100

@@ -1,0 +1,2 @@
+?package(yajhfc):needs="X11" section="Applications/Office"\
+  title="YajHFC" command="/usr/bin/yajhfc" icon="/usr/share/pixmaps/yajhfc.png"

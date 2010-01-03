@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# Get the user that owns the job
+USERNAME=$2
+
+if [ -z $USERNAME ]; then
+	echo "INFO: No user given. Discarding print job." 1>&2
+	exit 0
+fi
+
+PIPENAME=${DEVICE_URI#yajhfc:}
+PIPENAME=${PIPENAME/\$USERNAME/$USERNAME}
+
+if [ ! -p "$PIPENAME" ]; then
+	echo "INFO: Pipe $PIPENAME does not exist or is not a pipe, discarding print job (is YajHFC running?)" 1>&2
+	exit 0
+fi
+
+if [ ! -w "$PIPENAME" ]; then
+	echo "ERROR: Pipe $PIPENAME is not writeable." 1>&2
+	exit 1
+fi
+
+m=`cat $6 >"$PIPENAME" 2>&1`
+RC=$?
+case $RC in
+	0) echo "INFO: Fax sent" 1>&2 ;;
+	*) echo "ERROR: cat error (RC=$RC): $m" 1>&2 ;;
+esac
+
+exit $RC

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Exec=yajhfc --windowstate=T
+GenericName=Yet Another Java HylaFAX Client
+Icon=yajhfc
+MimeType=
+Name=YajHFC
+StartupNotify=false
+Type=Application
+Categories=Application;Office;
+

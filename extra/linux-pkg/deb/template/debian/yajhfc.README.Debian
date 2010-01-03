@@ -1,0 +1,12 @@
+yajhfc for Debian/Ubuntu
+------------------------
+
+If available, the YajHFC starter script uses a Sun version of the Java Runtime Environment (JRE).
+If this is not available it searches for an OpenJDK version.
+Only if these are not available, the default environment started by /usr/bin/java is used.
+
+The reason for this behaviour is that, in my experience, the Sun JRE and then the OpenJDK versions
+give the best user experience because the Swing Classes (used for the GUI) are often more or
+less incomplete in other JREs (especially in GNU Classpath used by GCJ).
+
+ -- Jonas Wolz <jonas.wolz@freenet.de>  Fri, 01 Jan 2010 17:00:00 +0100

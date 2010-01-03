@@ -1,0 +1,7 @@
+# YajHFC override settings
+#######################################
+# Enable printer port using named pipe:
+printerport-enableFIFO=true
+printerport-mkfifo=mkfifo -m 0622
+printerport-fifoName=/tmp/yajhfc-%u
+

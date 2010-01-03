@@ -1,0 +1,37 @@
+Source: yajhfc
+Section: comm
+Priority: extra
+Maintainer: Jonas Wolz <jonas.wolz@freenet.de>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.7.3
+Homepage: http://yajhfc.berlios.de/
+
+Package: yajhfc
+Architecture: all
+Depends: sun-java6-jre | java5-runtime
+Recommends: sun-java6-jre
+Suggests: ghostscript, libtiff-tools, pdf-viewer, postscript-viewer
+Description: Yet Another Java HylaFAX client
+ YajHFC is a client program for the HylaFAX fax server, implemented in Java.
+ .
+ Features:
+   * Faxing documents in PostScript, PDF and various other formats
+   * Polling faxes
+   * Support for generating cover pages from templates
+   * Viewing sent and received faxes
+   * Phone book (entries can optionally be read from SQL databases or LDAP directories)
+   * Visible table columns may be selected in a dialog
+   * Supports nine languages: English, French, German, Greek, Italian, Polish, Russian, Spanish and Turkish
+
+Package: yajhfc-faxprinter
+Architecture: all
+Depends: yajhfc, cups, cups-client
+Description: Install a virtual fax printer for YajHFC
+ This package installs a virtual fax printer in CUPS for YajHFC.
+ .
+ When a user prints to this printer, the output is redirected to YajHFC and
+ a "send fax" dialog is shown.
+ .
+ YajHFC must be running when a user wishes to print to the virtual fax printer.
+ Because of that, this package automatically adds an autostart link for all 
+ desktop environments conforming to the Free Desktop Menu Specification (e.g. KDE, GNOME, XFCE).
