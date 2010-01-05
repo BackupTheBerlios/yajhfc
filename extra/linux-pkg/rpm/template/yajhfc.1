@@ -1,0 +1,138 @@
+.\"                                      Hey, EMACS: \-*\- nroff \-*\-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1\-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH YAJHFC 1 "December 25, 2009"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage\-specific macros, see man(7)
+.SH NAME
+yajhfc \- Yet Another Java HylaFAX Client
+.SH SYNOPSIS
+.B yajhfc
+.RI [ options ] " [documents to send]" ...
+.SH DESCRIPTION
+This manual page documents the
+.B yajhfc
+command.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBYajHFC\fP is a client for the \fBHylaFAX\fP fax server written in Java.
+.sp 2
+\fIFeatures:\fP
+.br
+ * Faxing documents in PostScript, PDF and various other formats
+.br
+ * Polling faxes
+.br
+ * Support for generating cover pages from templates
+.br
+ * Viewing sent and received faxes
+.br
+ * Phone book (entries can optionally be read from SQL databases or LDAP directories)
+.br
+ * Visible table columns may be selected in a dialog
+.br
+ * Supports nine languages: English, French, German, Greek, Italian, Polish, Russian, Spanish and Turkish
+.br
+.SH OPTIONS
+.TP
+.B \-r, \-\-recipient\fP=\fIRECIPIENT\fP
+Specifies a recipient to send the fax to. You may
+specify either a fax number or detailed cover page
+information (see the FAQ for the format in the
+latter case). You may specify \fB\-\-recipient\fP multiple
+times for multiple recipients.
+.TP
+.B \-C, \-\-use\-cover\fP[=\fIyes\fP|\fIno\fP]
+Use a cover page for sending a fax.
+.TP
+.B \-s, \-\-subject\fP=\fISUBJECT\fP
+The fax subject for the cover page.
+.TP
+.B \-\-comment\fP=\fICOMMENT\fP
+The comment for the cover page.
+.TP
+.B \-\-stdin
+Read the file to send from standard input.
+.TP
+.B \-A, \-\-admin
+Start up in admin mode.
+.TP
+.B \-d, \-\-debug
+Output some debugging information.
+.TP
+.B \-l, \-\-logfile\fP=\fILOGFILE\fP
+The log file to log debug information to (if not
+specified, use stdout).
+.TP
+.B \-\-appendlogfile\fP=\fILOGFILE\fP
+Append debug information to the given log file.
+.TP
+.B \-\-background
+If there is no already running instance of YajHFC,
+launch a new instance and terminate this instance
+(after submitting the fax to send).
+.TP
+.B \-\-noclose
+Do not close YajHFC after submitting the fax.
+.TP
+.B \-\-no\-wait
+Do not wait for the send window to be closed by the
+user. If YajHFC is invoked multiple times before
+the user closes the send window, the specified
+documents are added to the list of files there.
+This option implies \fB\-\-background\fP.
+.TP
+.B \-T, \-\-showtab\fP=\fI0\fP|\fIR\fP|\fI1\fP|\fIS\fP|\fI2\fP|\fIT\fP
+Sets the tab to display on startup. Specify \fB0\fP or \fBR\fP
+or the \fIReceived\fP, \fB1\fP or \fBS\fP for the \fISent\fP or \fB2\fP or \fBT\fP
+for the \fITransmitting\fP tab.
+.TP
+.B \-\-windowstate\fP=\fIN\fP|\fIM\fP|\fII\fP|\fIT \fP
+Sets the initial window state of the main window to
+\fBN\fPormal, \fBM\fPaximized, \fBI\fPconified (minimized) or
+minimized to \fBT\fPray.
+.TP
+.B \-\-loadplugin\fP=\fIJARFILE\fP
+Specifies a jar file of a YajHFC plugin to load.
+.TP
+.B \-\-loaddriver\fP=\fIJARFILE\fP
+Specifies the location of a JDBC driver JAR file to load.
+.TP
+.B \-\-no\-plugins
+Disables loading plugins from the plugin.lst file.
+.TP
+.B \-\-no\-gui
+Sends a fax with only a minimal GUI.
+.TP
+.B \-\-no\-check
+Suppresses the check for the Java version at startup.
+.TP
+.B \-c, \-\-configdir\fP=\fIDIRECTORY\fP
+Sets the configuration directory to use instead of ~/.yajhfc
+.TP
+.B \-h, \-\-help\fP[=\fICOLUMNS\fP]
+Displays this text (formatted for COLUMNS columns if given).
+.SH SEE ALSO
+.BR hylafax (1),
+.BR faxsend (1).
+.br
+More documentation is available in PDF and HTML format in the YajHFC FAQ at
+.IR /usr/share/doc/yajhfc ,
+and on the homepage at
+.IR http://yajhfc.berlios.de/
+.SH AUTHOR
+YaJHFC was written by Jonas Wolz <jonas.wolz@freenet.de>.
+
