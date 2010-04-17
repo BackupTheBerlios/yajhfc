@@ -3,7 +3,7 @@
 WORKSPACE=~/java/workspace
 
 makepack() {
-  OUT=/tmp/yajhfc_$1.zip
+  OUT=$OUTDIR/yajhfc_$1.zip
   
   rm -f $OUT
   cd $WORKSPACE
@@ -23,19 +23,19 @@ makepack() {
 
   FILES="yajhfc/src/yajhfc/i18n/messages_$1.po"
 
-  if [ "$INCLCMDLINEOPTS" != "n" -a -f $LOCCMDLINEOPTS ]; then
+  if [ "$INCLCMDLINEOPTS" = "y" -a -f $LOCCMDLINEOPTS ]; then
      FILES="$FILES $LOCCMDLINEOPTS"
   fi
 
-  if [ "$INCLREADME" != "n" -a  -f $LOCREADME ]; then
+  if [ "$INCLREADME" = "y" -a  -f $LOCREADME ]; then
      FILES="$FILES $README $LOCREADME"
   fi
 
-  if [ "$INCLFOPMSG" != "n" -a -f $LOCFOPMSG ]; then
+  if [ "$INCLFOPMSG" = "y" -a -f $LOCFOPMSG ]; then
      FILES="$FILES $LOCFOPMSG"
   fi
 
-  if [ "$INCLFAQ"!="n" -a -f $LOCFAQ ]; then
+  if [ "$INCLFAQ" = "y" -a -f $LOCFAQ ]; then
      FILES="$FILES $FAQ $LOCFAQ yajhfc/doc/faq-src/faq.pdf yajhfc/doc/faq-src/faq_$1.pdf"
   fi
 
@@ -48,7 +48,13 @@ read -p 'Include FAQ? [y/n]' INCLFAQ
 read -p 'Include CommandLineOpts? [y/n]' INCLCMDLINEOPTS
 read -p 'Include README? [y/n]' INCLREADME
 read -p 'Include FOP Msg? [y/n]' INCLFOPMSG
+read -p 'Upload stuff? [y/n]' UPLOADSTUFF
 
+OUTDIR=/tmp/yajhfc-trans
+
+if [ ! -d $OUTDIR ]; then
+	mkdir -p $OUTDIR
+fi
 
 for PO in $WORKSPACE/yajhfc/src/yajhfc/i18n/messages_*.po ; do
         LANG=${PO##*messages_}
@@ -58,4 +64,15 @@ for PO in $WORKSPACE/yajhfc/src/yajhfc/i18n/messages_*.po ; do
 	makepack $LANG
 done
 
+if [ "$UPLOADSTUFF" = "y" ]; then
+	cd $OUTDIR
+
+	UPLOADPATH=/pub/yajhfc/i18n-temp
+	scp yajhfc_*.zip jwolz@shell.berlios.de:/home/groups/ftp$UPLOADPATH/
+	
+	echo "Uploaded the following files:"
+	for ZIP in yajhfc_*.zip ; do
+	   echo ftp://ftp.berlios.de$UPLOADPATH/$ZIP
+	done
+fi
 

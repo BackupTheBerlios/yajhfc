@@ -52,6 +52,7 @@ install: build
 #	$(MAKE) DESTDIR=$(CURDIR)/debian/yajhfc install
 	sh install.sh $(CURDIR)/debian/yajhfc
 	sh install-faxprinter.sh $(CURDIR)/debian/yajhfc-faxprinter
+	sh install-fopplugin.sh $(CURDIR)/debian/yajhfc-fopplugin
 
 
 # Build architecture-independent files here.

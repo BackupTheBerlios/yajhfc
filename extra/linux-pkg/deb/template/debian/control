@@ -25,7 +25,7 @@ Description: Yet Another Java HylaFAX client
 
 Package: yajhfc-faxprinter
 Architecture: all
-Depends: yajhfc, cups, cups-client
+Depends: yajhfc, cups | cupsys, cups-client | cupsys-client
 Description: Install a virtual fax printer for YajHFC
  This package installs a virtual fax printer in CUPS for YajHFC.
  .
@@ -35,3 +35,12 @@ Description: Install a virtual fax printer for YajHFC
  YajHFC must be running when a user wishes to print to the virtual fax printer.
  Because of that, this package automatically adds an autostart link for all 
  desktop environments conforming to the Free Desktop Menu Specification (e.g. KDE, GNOME, XFCE).
+
+
+Package: yajhfc-fopplugin
+Architecture: all
+Depends: yajhfc, fop
+Description: FOP plugin for YajHFC
+ This plugin uses Apache FOP to enable XSL-FO and limited ODT support in YajHFC.
+ .
+ The package itself does not contain Apache FOP, but depends on the respective Debian/Ubuntu package instead.

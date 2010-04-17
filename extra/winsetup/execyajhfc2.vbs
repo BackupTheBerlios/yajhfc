@@ -242,27 +242,25 @@ commandline = """" & javahome & "bin\" & javaexe & """ " & launchargs
 
 'msgbox """" & commandline & """, dowait = " & dowait & ", printlaunchmode = " & printlaunchmode & ", dosaveenv = " & dosaveenv
 
-if dowait then
+if copystdin then
 	dim java, strSrc, strDst
 
 	' Launch java:
 	Set java = WshShell.Exec(commandline)
 	
-	If copystdin then
-		' Copy stdin of this script over to the java executable:
-		Set strSrc = WScript.StdIn
-		Set strDst = java.StdIn
+	' Copy stdin of this script over to the java executable:
+	Set strSrc = WScript.StdIn
+	Set strDst = java.StdIn
 		
-		Do While (java.Status = 0 and not strSrc.AtEndOfStream)
-			On Error Resume Next
-			strDst.Write strSrc.Read(4000)
-			if (err <> 0) then
-				Wscript.echo "Error #" & CStr(Err.Number) & ": " & Err.Description
-				Err.Clear
-			end if
-		Loop
-		strDst.Close
-	end if	
+	Do While (java.Status = 0 and not strSrc.AtEndOfStream)
+		On Error Resume Next
+		strDst.Write strSrc.Read(4000)
+		if (err <> 0) then
+			Wscript.echo "Error #" & CStr(Err.Number) & ": " & Err.Description
+			Err.Clear
+		end if
+	Loop
+	strDst.Close
 
 	'Wait for termination of YajHFC:
 	Do While (java.Status = 0)
@@ -273,6 +271,6 @@ if dowait then
 	'wscript.stdout.write java.stdout.readAll()
 	'wscript.stderr.write java.stderr.readAll()
 else
-	wshshell.run commandline
+	wshshell.run commandline, , dowait
 end if
 

@@ -1,11 +1,15 @@
 #!/bin/sh
 
+set -e
+
 EXTRADIR=~/java/yajhfc/extra
 WORKSPACE=~/java/workspace
 OUTPUT=~/java/yajhfc/temp
 
 ANT=ant
 ISCC="wine \"C:\Program Files\Inno Setup 5\ISCC\""
+ISSFILE=setup3.iss
+
 
 read YAJVER YAJVERDOT FOPVER FOPVERDOT  <<EOF
 $(perl -lne 'if ($_ =~/public static final String AppVersion = "(.*?)";/) { $Ver=$1; $Ver=~tr/./_/; printf("%s %s ", $Ver, $1);}' $WORKSPACE/yajhfc/src/yajhfc/Utils.java $WORKSPACE/FOPPlugin/src/yajhfc/faxcover/fop/EntryPoint.java )
@@ -31,8 +35,8 @@ for R in $WORKSPACE/yajhfc/README*.txt; do
 done
 windowsify -i utf-8 -o utf-8 $READMES 
 
-eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT setup2.iss
-eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT /dWITHFOP setup2.iss
+eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT $ISSFILE
+eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT /dWITHFOP $ISSFILE
 
 echo "Copying files to output..."
 cp $WORKSPACE/yajhfc/build/yajhfc.jar $OUTPUT/yajhfc-$YAJVER.jar
@@ -51,4 +55,8 @@ cat <<EOF > $OUTPUT/versioninfo.xml
 	<infoURL>http://yajhfc.berlios.de/</infoURL>
 </yajhfcupdatefile>
 EOF
+
+echo "Creating .deb package..."
+cd $EXTRADIR/linux-pkg/deb
+./makepackage.sh $YAJVERDOT
 

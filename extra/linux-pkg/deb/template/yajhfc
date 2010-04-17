@@ -24,5 +24,19 @@ for DIR in $JAVADIRS; do
   fi
 done
 
-exec $JAVA -jar /usr/share/yajhfc/yajhfc.jar "$@"
+# Include additional setup from other yajhfc-* paclages
+for F in /etc/yajhfc/launcher-include.* ; do
+  if [ -f $F ]; then
+    . $F
+  fi
+done
+
+if [ -n "$CLASSPATH" ]; then
+  CLASSPATH=$CLASSPATH:/usr/share/yajhfc/yajhfc.jar
+  export CLASSPATH
+
+  exec $JAVA yajhfc.Launcher $YAJHFCARGS "$@"
+else
+  exec $JAVA -jar /usr/share/yajhfc/yajhfc.jar $YAJHFCARGS "$@"
+fi
 
