@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="iso-8859-15"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Manually installing a YajHFC fax printer with CUPS</title>
+    <meta name="AUTHOR" content="Jonas Wolz" />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15" />
+    <link rel="stylesheet" type="text/css" href="img/default.css" />
+  </head>
+  <body>
+    <h1>
+       Manually installing a YajHFC fax printer with CUPS 
+    </h1>
+    <hr />
+    <p>
+       Starting with YajHFC 0.4.3, there are three different ways to install a fax printer with YajHFC in Linux/Unix using CUPS: 
+    </p>
+    <ol>
+      <li>
+         Using YajHFC's TCP printer port together with CUPS' <code>socket:</code> backend 
+      </li>
+      <li>
+         Using YajHFC's named pipe printer port with a custom CUPS backend 
+      </li>
+      <li>
+         Using a custom CUPS backend that starts YajHFC in the backend 
+      </li>
+    </ol>
+    <p>
+       The individual advantages/disadvantages of the different methods are: 
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>
+             Method 
+          </th>
+          <th>
+             Advantages 
+          </th>
+          <th>
+             Disadvantages 
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong>TCP port with socket: backend</strong>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 CUPS is used as designed 
+              </li>
+              <li>
+                 Relatively easy to set up 
+              </li>
+              <li>
+                 No custom CUPS backend necessary 
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 YajHFC must be running for the fax printer to work 
+              </li>
+              <li>
+                 Only a single user per computer can be logged in and have a working fax printer 
+              </li>
+              <li>
+                 Any print output on the fax printer goes to the user that has YajHFC started 
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Named pipe with custom backend</strong>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 CUPS is used as designed 
+              </li>
+              <li>
+                 Relatively easy to set up 
+              </li>
+              <li>
+                 Works for multiple users simultaneously logged in on the same computer 
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 YajHFC must be running for the fax printer to work 
+              </li>
+              <li>
+                 Needs a custom CUPS backend 
+              </li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Custom backend starting YajHFC</strong>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 YajHFC does not need to be running for the fax printer to work 
+              </li>
+              <li>
+                 Works for multiple users simultaneously logged in on the same computer 
+              </li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li>
+                 Needs a custom CUPS backend 
+              </li>
+              <li>
+                 The CUPS backend is used in a way a backend actually is not intended to be used 
+              </li>
+              <li>
+                 Often a bit tricky to set up 
+              </li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+       The recommended method is the <a href="#NamedPipe">second one</a> (using named pipes), as this method works flawlessly on a multi-user system and is not too hard to set up. This method is also used by the <code>yajhfc-faxprinter</code> package. (Nevertheless, you are also encouraged to use the other ones if they better fit your needs). 
+    </p>
+    <p>
+       This document only describes the first two methods. If you want to try the third one, please download the <a href="ftp://ftp.berlios.de/pub/yajhfc/download/yajhfc-cups2.tgz"><code>yajhfc-cups2.tgz</code></a> tar archive and refer to the included INSTALL file. 
+    </p>
+    <h2>
+       Using YajHFC's TCP printer port together with CUPS' <code>socket:</code> backend 
+    </h2>
+    <p>
+      <em>NOTE:</em> You can also get all the files mentioned in this document (including this HTML file) by downloading <a href="ftp://ftp.berlios.de/pub/yajhfc/download/printerport-cups.tar.gz">this archive</a>. This is especially recommended if you need to download the files using a Windows computer (as this may screw up the line breaks). 
+    </p>
+    <h3>
+       Setting up YajHFC 
+    </h3>
+    <ol>
+      <li>
+        <p>
+           Start YajHFC, open the <em>Options</em> dialog, go to <em>Advanced</em> -&gt; <em>Printer Port</em> and enable the TCP printer port as shown in the following image (you can just accept the defaults): 
+        </p>
+        <img src="img/tcp-printerport.png" alt="Enabling TCP printer port" />
+      </li>
+      <li>
+         Close the Options dialog clicking <em>OK</em>
+      </li>
+      <li>
+        <p>
+           Make sure YajHFC is automatically started when the user logs in. 
+        </p>
+        <p>
+           If you use a desktop environment following the Free Desktop Menu Specification (e.g. GNOME, KDE, XFCE), just create an appropriate <code>.desktop</code> file and put it in the directory <code>~/.config/autostart</code> (to autostart it for a single user only) or <code>/etc/xdg/autostart</code> (to autostart it for all users). 
+          <br />
+           If you wish, you can use <a href="yajhfc-autostart.desktop"><code>yajhfc-autostart.desktop</code></a> as a starting point. 
+        </p>
+        <p>
+          If you use a different desktop environment, please refer to its documentation (or Google) to find out how to autostart programs. 
+        </p>
+      </li>
+    </ol>
+    <h3>
+       Setting up CUPS 
+    </h3>
+    <ol>
+      <li>
+         Download <a href="yajhfc.ppd"><code>yajhfc.ppd</code></a> and save it on your hard disk. 
+      </li>
+      <li>
+         Open a terminal and change to the directory where <code>yajhfc.ppd</code> is: 
+        <pre> cd /directory/to/yajhfc.ppd/</pre>
+      </li>
+      <li>
+        <p>
+           Enter (or copy&amp;paste) the following command <em>into one line</em> in the terminal (as root, so prefix the command with <code>sudo</code> if necessary): 
+        </p>
+        <pre> lpadmin -p yajhfc -D 'YajHFC virtual fax printer' -L 'localhost' -v 'socket://localhost:19100'
+      -E -P yajhfc.ppd -o "printer-error-policy=abort-job" -o "printer-is-shared=false"</pre>
+        <p>
+           If you want to know in detail what this command means, please refer to the <a href="http://www.cups.org/documentation.php/man-lpadmin.html">lpadmin man page</a>. 
+        </p>
+      </li>
+      <li>
+         Now you should have a new printer named <code>yajhfc</code> available. When you print to it <em>and</em> YajHFC is running, the YajHFC send dialog should appear (maybe after a delay of a few seconds). 
+      </li>
+    </ol>
+    <a id="NamedPipe"/>
+    <h2>
+       Using YajHFC's named pipe printer port with a custom CUPS backend 
+    </h2>
+    <p>
+      <em>NOTE:</em> You can also get all the files mentioned in this document (including this HTML file) by downloading <a href="ftp://ftp.berlios.de/pub/yajhfc/download/printerport-cups.tar.gz">this archive</a>. This is especially recommended if you need to download the files using a Windows computer (as this may screw up the line breaks). 
+    </p>
+    <h3>
+       Setting up YajHFC 
+    </h3>
+    <ol>
+      <li>
+        <p>
+           Start YajHFC, open the <em>Options</em> dialog, go to <em>Advanced</em> -&gt; <em>Printer Port</em> and enable the named pipe printer port as shown in the following image (you can just accept the defaults): 
+        </p>
+        <img src="img/namedpipe-printerport.png" alt="Enabling named pipe printer port" />
+      </li>
+      <li>
+         Close the Options dialog clicking <em>OK</em>
+      </li>
+      <li>
+        <p>
+           Make sure YajHFC is automatically started when the user logs in. 
+        </p>
+        <p>
+           If you use a desktop environment following the Free Desktop Menu Specification (e.g. GNOME, KDE, XFCE), just create an appropriate <code>.desktop</code> file and put it in the directory <code>~/.config/autostart</code> (to autostart it for a single user only) or <code>/etc/xdg/autostart</code> (to autostart it for all users). 
+          <br />
+           If you wish, you can use <a href="yajhfc-autostart.desktop"><code>yajhfc-autostart.desktop</code></a> as a starting point. 
+        </p>
+        <p>
+          If you use a different desktop environment, please refer to its documentation (or Google) to find out how to autostart programs. 
+        </p>
+      </li>
+    </ol>
+    <h3>
+       Setting up CUPS 
+    </h3>
+    <ol>
+      <li>
+         Download <a href="yajhfc.ppd"><code>yajhfc.ppd</code></a> and the CUPS backend file <a href="yajhfc"><code>yajhfc</code></a> and save it on your hard disk. 
+      </li>
+      <li>
+         Open a terminal and change to the directory where <code>yajhfc.ppd</code> and <code>yajhfc</code> are: 
+        <pre> cd /directory/to/yajhfc.ppd/</pre>
+      </li>
+      <li>
+        <p>
+           Install the CUPS backend. To do so, enter the following commands in the terminal (as root, so prefix the commands with <code>sudo</code> if necessary): 
+        </p>
+        <pre> cp yajhfc /usr/lib/cups/backend
+
+ chown root /usr/lib/cups/backend/yajhfc
+
+ chmod 0755 /usr/lib/cups/backend/yajhfc</pre>
+        <p>
+           On some distributions the cups backend directory may be at another place than <code>/usr/lib/cups/backend</code>. In that case, just replace <code>/usr/lib/cups/backend</code> with the appropriate directory name. 
+        </p>
+      </li>
+      <li>
+        <p>
+           Enter (or copy&amp;paste) the following command <em>into one line</em> in the terminal (as root, so prefix the command with <code>sudo</code> if necessary): 
+        </p>
+        <pre> lpadmin -p yajhfc -D 'YajHFC virtual fax printer' -L 'localhost' -v 'yajhfc:/tmp/yajhfc-$USERNAME'
+      -E -P yajhfc.ppd -o "printer-error-policy=abort-job" -o "printer-is-shared=false"</pre>
+        <p>
+           If you want to know in detail what this command means, please refer to the <a href="http://www.cups.org/documentation.php/man-lpadmin.html">lpadmin man page</a>. 
+        </p>
+      </li>
+      <li>
+         Now you should have a new printer named <code>yajhfc</code> available. When you print to it <em>and</em> YajHFC is running, the YajHFC send dialog should appear. 
+      </li>
+    </ol>
+    <hr />
+    <p style="font-size:small;">
+       Created by: <a href="mailto:jonas.wolz@freenet.de">Jonas Wolz</a>
+    </p>
+    <p style="font-size:x-small;">
+       Last modification: 
+Sat Jan  2 19:53:42 CET 2010
+    </p>
+  </body>
+</html>
