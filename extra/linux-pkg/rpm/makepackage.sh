@@ -13,10 +13,11 @@ fi
 
 cd `dirname $0`
 SCRIPTDIR="$PWD"
+OUTPUTDIR=$SCRIPTDIR/files
 
 VERSION=$1
 if [ $# -lt 2 ]; then
-  PACKAGEVERSION=${VERSION}-1
+  PACKAGEVERSION=${VERSION}
 else
   PACKAGEVERSION=${2}
 fi
@@ -39,5 +40,12 @@ cp doc/faq.html doc/faq.css doc/footnote.png doc/faq.pdf README.txt COPYING $TAR
 
 cd $BUILDDIR
 
-tar czvf $SCRIPTDIR/yajhfc-$VERSION-rpmsrc.tgz yajhfc-$VERSION
+tar czvf $OUTPUTDIR/yajhfc-$VERSION-rpmsrc.tgz yajhfc-$VERSION
+
+cd $SCRIPTDIR
+
+for SPEC in yajhfc*.spec ; do
+  sed -e "s/§VERSION§/$VERSION/g" -e "s/§PACKAGEVERSION§/$PACKAGEVERSION/g" $SPEC > $OUTPUTDIR/$SPEC
+done
+
 

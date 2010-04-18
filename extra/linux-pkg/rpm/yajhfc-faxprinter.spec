@@ -1,6 +1,6 @@
 Name:         yajhfc-faxprinter
 Summary:      Install a virtual fax printer for YajHFC
-Version:      0.4.2.99beta1
+Version:      §PACKAGEVERSION§
 Release:      1
 License:      GNU General Public License (GPL)
 Group:        Hardware/Fax
@@ -22,7 +22,7 @@ Because of that, this package automatically adds an autostart link for all
 desktop environments conforming to the Free Desktop Menu Specification (e.g. KDE, GNOME, XFCE).
 
 %prep
-%setup -n yajhfc-0.4.3beta1
+%setup -n yajhfc-§VERSION§
 %build
 # Do nothing
 %install

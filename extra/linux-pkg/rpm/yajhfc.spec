@@ -1,6 +1,6 @@
 Name:         yajhfc
 Summary:      Yet Another Java HylaFAX Client
-Version:      0.4.2.99beta1
+Version:      §PACKAGEVERSION§
 Release:      1
 License:      GNU General Public License (GPL)
 Group:        Hardware/Fax
@@ -24,7 +24,7 @@ YajHFC is a client program for the HylaFAX fax server, implemented in Java.
    * Supports nine languages: English, French, German, Greek, Italian, Polish, Russian, Spanish and Turkish
 
 %prep
-%setup -n yajhfc-0.4.3beta1
+%setup -n yajhfc-§VERSION§
 %build
 # Do nothing
 %install
