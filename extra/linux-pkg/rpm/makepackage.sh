@@ -1,7 +1,8 @@
 #!/bin/bash
-# Create DEB package
+# Create RPM package
 
 set -e
+shopt -s extglob
 
 BUILDDIR=/tmp/yajhfc-rpm
 WORKSPACE=$HOME/java/workspace/yajhfc
@@ -15,11 +16,34 @@ cd `dirname $0`
 SCRIPTDIR="$PWD"
 OUTPUTDIR=$SCRIPTDIR/files
 
-VERSION=$1
+ORIGINALVERSION=$1
 if [ $# -lt 2 ]; then
-  PACKAGEVERSION=${VERSION}
+  LASTCOMP=${ORIGINALVERSION##*.}
+  APPENDIX=${LASTCOMP##*([0-9])}
+  
+  if [ -n "$APPENDIX" ]; then
+   NUMVER=${LASTCOMP%%+([A-Za-z])*([0-9])}
+   (( NUMVER=NUMVER-1 ))
+   case $APPENDIX in
+   beta*)
+     EXTRANUM=90
+   ;;
+   alpha*)
+     EXTRANUM=80
+   ;;
+   rc*)
+     EXTRANUM=99
+   ;;
+   *)
+     EXTRANUM=77
+   ;;
+   esac
+   VERSION=${ORIGINALVERSION%.*}.$NUMVER.$EXTRANUM$APPENDIX
+  else
+   VERSION=${ORIGINALVERSION}
+  fi
 else
-  PACKAGEVERSION=${2}
+  VERSION=${2}
 fi
 
 echo 'Copying template...'
@@ -45,7 +69,7 @@ tar czvf $OUTPUTDIR/yajhfc-$VERSION-rpmsrc.tgz yajhfc-$VERSION
 cd $SCRIPTDIR
 
 for SPEC in yajhfc*.spec ; do
-  sed -e "s/§VERSION§/$VERSION/g" -e "s/§PACKAGEVERSION§/$PACKAGEVERSION/g" $SPEC > $OUTPUTDIR/$SPEC
+  sed -e "s/§VERSION§/$VERSION/g" -e "s/§ORIGINALVERSION§/$ORIGINALVERSION/g" $SPEC > $OUTPUTDIR/$SPEC
 done
 
 

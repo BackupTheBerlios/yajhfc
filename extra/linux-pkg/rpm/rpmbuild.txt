@@ -1,0 +1,4 @@
+
+*.spec    -> RPM/SPECS
+*.tar.gz  -> RPM/SOURCES
+rpmbuild -ba yajhfc-faxprinter.spec yajhfc.spec

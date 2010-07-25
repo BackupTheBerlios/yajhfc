@@ -1,0 +1,8 @@
+InstallFaxPrinter=Install a fax printer
+InstallingX=Installing %1...
+FaxPrinter=fax printer
+CoreApplicationFiles=Core application files
+Documentation=Documentation
+InstallGSTask=Download and install GhostScript (if not already installed)
+InstallTIFFTask=Download and install tiff2pdf (if not already installed)
+PreserveDLMsg=Save downloaded files on the desktop?

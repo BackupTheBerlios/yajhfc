@@ -1,15 +1,24 @@
 #!/bin/sh
+# Usage: makedistribution [outputdir]
 
 set -e
 
 EXTRADIR=~/java/yajhfc/extra
 WORKSPACE=~/java/workspace
-OUTPUT=~/java/yajhfc/temp
 
+if [ $# -ge 1 ]; then
+  OUTPUT="$1"
+  OWNSUBDIR=0
+else
+  OUTPUT=~/java/yajhfc/temp/betas
+  OWNSUBDIR=1
+fi
+
+
+build() {
 ANT=ant
 ISCC="wine \"C:\Program Files\Inno Setup 5\ISCC\""
 ISSFILE=setup3.iss
-
 
 read YAJVER YAJVERDOT FOPVER FOPVERDOT  <<EOF
 $(perl -lne 'if ($_ =~/public static final String AppVersion = "(.*?)";/) { $Ver=$1; $Ver=~tr/./_/; printf("%s %s ", $Ver, $1);}' $WORKSPACE/yajhfc/src/yajhfc/Utils.java $WORKSPACE/FOPPlugin/src/yajhfc/faxcover/fop/EntryPoint.java )
@@ -20,6 +29,11 @@ echo "Building distribution for:"
 echo "YajHFC Version: $YAJVERDOT (Tag: $YAJVER); FOP Plugin version: $FOPVERDOT (Tag: $FOPVER)"
 echo
 
+if [ $OWNSUBDIR -ne 0 ]; then
+  OUTPUT=$OUTPUT/$YAJVERDOT
+  mkdir -p $OUTPUT
+fi
+
 echo "Building YajHFC..."
 cd $WORKSPACE/yajhfc
 $ANT clean fulldist
@@ -29,13 +43,16 @@ $ANT clean fulldist
 echo "Building Windows Setup..."
 cd $EXTRADIR/winsetup
 
+echo "Converting README files to Windows format..."
 READMES=""
 for R in $WORKSPACE/yajhfc/README*.txt; do
   READMES="$READMES $R temp/`basename $R`"
 done
 windowsify -i utf-8 -o utf-8 $READMES 
 
+echo "Building YajHFC setup..."
 eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT $ISSFILE
+echo "Building YajHFC with FOPPlugin setup..."
 eval $ISCC /dVERSION=$YAJVERDOT /dFOPVersion=$FOPVERDOT /dWITHFOP $ISSFILE
 
 echo "Copying files to output..."
@@ -58,5 +75,17 @@ EOF
 
 echo "Creating .deb package..."
 cd $EXTRADIR/linux-pkg/deb
-./makepackage.sh $YAJVERDOT
+./makepackage.sh $YAJVERDOT "" "$OUTPUT"
 
+echo "Creating MAC app..."
+cd $EXTRADIR/mac-app
+./make-macapp.sh $YAJVERDOT "$OUTPUT"
+
+echo "Creating RPM package..."
+cd $EXTRADIR/linux-pkg/rpm
+./makepackage.sh $YAJVERDOT
+./invoke-chroot.sh "$OUTPUT"
+
+}
+
+build 2>&1 | tee build.log

@@ -1,6 +1,6 @@
 Name:         yajhfc
 Summary:      Yet Another Java HylaFAX Client
-Version:      §PACKAGEVERSION§
+Version:      §VERSION§
 Release:      1
 License:      GNU General Public License (GPL)
 Group:        Hardware/Fax

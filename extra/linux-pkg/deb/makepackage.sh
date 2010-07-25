@@ -1,22 +1,30 @@
 #!/bin/bash
 # Create DEB package
+# Usage: Usage: makepackage.sh VERSION [PACKAGEVERSION] [outputdir]"
+
+if [ $# -lt 1 ]; then
+  echo "Usage: makepackage.sh VERSION [PACKAGEVERSION] [outputdir]"
+  exit 1
+fi
 
 set -e
 
 BUILDDIR=/tmp/yajhfc-deb
 WORKSPACE=$HOME/java/workspace/yajhfc
-DEBDIR=$HOME/java/yajhfc/temp
-REPOSITORY=$HOME/java/yajhfc/temp/deb-repository
 
-if [ $# -lt 1 ]; then
-  echo "Usage: makepackage.sh VERSION [PACKAGEVERSION]"
-  exit 1
+if [ $# -ge 3 ]; then
+  DEBDIR="$3"
+else
+  DEBDIR=$HOME/java/yajhfc/temp/betas
 fi
+REPOSITORY=$DEBDIR/deb-repository
 
 cd `dirname $0`
 
+SCRIPTDIR="$PWD"
+
 VERSION=$1
-if [ $# -lt 2 ]; then
+if [ $# -lt 2 -o -z "$2" ]; then
   PACKAGEVERSION=${VERSION}-1
 else
   PACKAGEVERSION=${2}
@@ -59,12 +67,17 @@ EOF
 fi;
 
 echo 'Building Debian packets...'
-pushd $TARGETDIR
+cd $TARGETDIR
 dpkg-buildpackage -rfakeroot
 
 cd ..
 cp *.deb $DEBDIR
 
+for DIR in $REPOSITORY/stable/deb-all $REPOSITORY/stable/sources ; do
+   if [ ! -d $DIR ]; then
+     mkdir -p $DIR
+   fi
+done
 
 echo 'Updating repository...'
 cp *.deb    $REPOSITORY/stable/deb-all
@@ -72,15 +85,5 @@ cp *.dsc    $REPOSITORY/stable/sources
 cp *.tar.gz $REPOSITORY/stable/sources
 
 cd $REPOSITORY
-apt-ftparchive packages stable > stable/Packages
-gzip -c9 stable/Packages > stable/Packages.gz
-bzip2 -c stable/Packages > stable/Packages.bz2
-
-apt-ftparchive sources stable > stable/Sources
-gzip -c9 stable/Sources > stable/Sources.gz
-bzip2 -c stable/Sources > stable/Sources.bz2
-
-
-apt-ftparchive -o 'APT::FTPArchive::Release::Suite=stable' release stable > stable/Release
-gpg -u jonas.wolz@freenet.de --output stable/Release.gpg -ba stable/Release
+$SCRIPTDIR/updaterepository.sh
 

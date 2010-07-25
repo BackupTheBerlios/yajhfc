@@ -65,6 +65,7 @@ function getJavaArgs
 	' Set current directory to app directory:
 	wshshell.CurrentDirectory = fso.getParentFolderName(WScript.ScriptFullName)
 
+	getJavaArgs = "-Duser.home=""" + env("USERPROFILE") + """ "
 	' Add all files in the "lib" sub-directory to the class path
 	if (fso.FolderExists("lib")) then
 	  dim libs, classpath, file
@@ -81,9 +82,9 @@ function getJavaArgs
 	  classpath = classpath & ";" & jarname
 	  env("CLASSPATH") = classpath
 	
-	  getJavaArgs = launchclass
+	  getJavaArgs = getJavaArgs & launchclass
 	else
-	  getJavaArgs = "-jar " & jarname
+	  getJavaArgs = getJavaArgs & "-jar " & jarname
 	end if
 end function
 

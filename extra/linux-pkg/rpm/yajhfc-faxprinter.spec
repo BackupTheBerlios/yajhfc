@@ -1,6 +1,6 @@
 Name:         yajhfc-faxprinter
 Summary:      Install a virtual fax printer for YajHFC
-Version:      §PACKAGEVERSION§
+Version:      §VERSION§
 Release:      1
 License:      GNU General Public License (GPL)
 Group:        Hardware/Fax
