@@ -20,10 +20,24 @@ ORIGINALVERSION=$1
 if [ $# -lt 2 ]; then
   LASTCOMP=${ORIGINALVERSION##*.}
   APPENDIX=${LASTCOMP##*([0-9])}
+
+  ORGVERSHORTED=${ORIGINALVERSION%.*}
   
   if [ -n "$APPENDIX" ]; then
    NUMVER=${LASTCOMP%%+([A-Za-z])*([0-9])}
-   (( NUMVER=NUMVER-1 ))
+   if [ $NUMVER -eq 0 ]; then
+     NUMVER=9999
+     NUMVER2=${ORGVERSHORTED##*.}
+     (( NUMVER2-- ))
+     if [ $NUMVER2 -lt 0 ]; then
+       echo "Unsupported minor version 0, script needs to be extended"
+       exit 1 
+     fi
+     ORGVERSHORTED=${ORGVERSHORTED%.*}.$NUMVER2
+   else
+     (( NUMVER=NUMVER-1 ))
+   fi
+
    case $APPENDIX in
    beta*)
      EXTRANUM=90
@@ -38,7 +52,7 @@ if [ $# -lt 2 ]; then
      EXTRANUM=77
    ;;
    esac
-   VERSION=${ORIGINALVERSION%.*}.$NUMVER.$EXTRANUM$APPENDIX
+   VERSION=$ORGVERSHORTED.$NUMVER.$EXTRANUM$APPENDIX
   else
    VERSION=${ORIGINALVERSION}
   fi

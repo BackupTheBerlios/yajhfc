@@ -162,7 +162,7 @@ Name: {group}\FAQ ({cm:Turkish}); Filename: {app}\faq_tr.pdf; Components: docs
 [Registry]
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: instpath; ValueData: {app}; Flags: uninsdeletekey
 Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: jarfile; ValueData: yajhfc.jar; Flags: uninsdeletekey
-Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchyajhfcparams; ValueData: "{#AdditionalLaunchArgs} --stdin --background"; Flags: createvalueifdoesntexist uninsdeletekey; Components: faxprinter/redmon
+Root: HKLM; Subkey: Software\YajHFC; ValueType: string; ValueName: printlaunchyajhfcparams; ValueData: "{#AdditionalLaunchArgs} --stdin"; Flags: createvalueifdoesntexist uninsdeletekey; Components: faxprinter/redmon
 Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Print\Monitors\{cm:redmonname}\Ports\YAJHFC:; Flags: uninsdeletekey dontcreatekey; Components: faxprinter/redmon faxprinter/redmonee
 
 [Components]

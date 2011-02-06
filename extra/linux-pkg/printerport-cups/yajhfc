@@ -1,18 +1,32 @@
 #!/bin/bash
-#
+# CUPS backend for YajHFC
+
+if [ $# == 0 ]; then
+  echo 'file yajhfc:/tmp/yajhfc-$USERNAME "YajHFC Fax Printer" "HylaFAX" "MFG:HylaFAX;MDL:(HylaFAX);DES:YAJHFC HylaFAX Printer;CLS:PRINTER;CMD:POSTSCRIPT;"'
+  exit
+fi
+
 # Get the user that owns the job
 USERNAME=$2
 
 if [ -z $USERNAME ]; then
-	echo "INFO: No user given. Discarding print job." 1>&2
+	echo "WARNING: No user given. Discarding print job." 1>&2
 	exit 0
 fi
 
-PIPENAME=${DEVICE_URI#yajhfc:}
-PIPENAME=${PIPENAME/\$USERNAME/$USERNAME}
+if [ -n "$DEVICE_URI" ]; then
+  PIPENAME=${DEVICE_URI#yajhfc:}
+  PIPENAME=${PIPENAME/\$USERNAME/$USERNAME}
+else
+  PIPENAME="/tmp/yajhfc-$USERNAME"
+fi
+
+if [ "$PIPENAME" == "/" ]; then
+  PIPENAME="/tmp/yajhfc-$USERNAME"
+fi
 
 if [ ! -p "$PIPENAME" ]; then
-	echo "INFO: Pipe $PIPENAME does not exist or is not a pipe, discarding print job (is YajHFC running?)" 1>&2
+	echo "WARNING: Pipe $PIPENAME does not exist or is not a pipe, discarding print job (is YajHFC running?)" 1>&2
 	exit 0
 fi
 
