@@ -71,7 +71,7 @@ cd $TARGETDIR
 dpkg-buildpackage -rfakeroot
 
 cd ..
-cp *.deb $DEBDIR
+#cp *.deb $DEBDIR
 
 for DIR in $REPOSITORY/stable/deb-all $REPOSITORY/stable/sources ; do
    if [ ! -d $DIR ]; then
@@ -83,6 +83,13 @@ echo 'Updating repository...'
 cp *.deb    $REPOSITORY/stable/deb-all
 cp *.dsc    $REPOSITORY/stable/sources
 cp *.tar.gz $REPOSITORY/stable/sources
+
+for F in *.deb ; do
+  ln $REPOSITORY/stable/deb-all/$F $DEBDIR/$F
+done
+for F in *.dsc *.tar.gz ; do
+  ln $REPOSITORY/stable/sources/$F $DEBDIR/$F
+done
 
 cd $REPOSITORY
 $SCRIPTDIR/updaterepository.sh
