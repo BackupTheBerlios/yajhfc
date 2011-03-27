@@ -85,10 +85,10 @@ cp *.dsc    $REPOSITORY/stable/sources
 cp *.tar.gz $REPOSITORY/stable/sources
 
 for F in *.deb ; do
-  ln $REPOSITORY/stable/deb-all/$F $DEBDIR/$F
+  ln -f $REPOSITORY/stable/deb-all/$F $DEBDIR/$F
 done
 for F in *.dsc *.tar.gz ; do
-  ln $REPOSITORY/stable/sources/$F $DEBDIR/$F
+  ln -f $REPOSITORY/stable/sources/$F $DEBDIR/$F
 done
 
 cd $REPOSITORY

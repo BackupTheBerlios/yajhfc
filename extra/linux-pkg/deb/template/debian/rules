@@ -28,6 +28,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 #	$(MAKE)
+	sh build.sh
 	#docbook-to-man debian/yajhfc.sgml > yajhfc.1
 
 	touch $@

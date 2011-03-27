@@ -26,7 +26,7 @@ YajHFC is a client program for the HylaFAX fax server, implemented in Java.
 %prep
 %setup -n yajhfc-§VERSION§
 %build
-# Do nothing
+sh build.sh
 %install
 sh install.sh "%{buildroot}"
 
