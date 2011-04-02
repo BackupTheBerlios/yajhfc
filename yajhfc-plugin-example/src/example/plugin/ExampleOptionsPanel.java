@@ -18,14 +18,15 @@
  */
 package example.plugin;
 
+import java.awt.FlowLayout;
+
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import yajhfc.FaxOptions;
-import yajhfc.options.OptionsPage;
+import yajhfc.options.AbstractOptionsPanel;
 import yajhfc.options.OptionsWin;
 
 /**
@@ -34,18 +35,19 @@ import yajhfc.options.OptionsWin;
  * @author jonas
  *
  */
-public class ExampleOptionsPanel extends JPanel implements OptionsPage {   
+public class ExampleOptionsPanel extends AbstractOptionsPanel<FaxOptions> {   
     
-    JTextField textOption1, textOption2;
+    public ExampleOptionsPanel() {
+		super(false);
+	}
+
+	JTextField textOption1, textOption2;
     
     JCheckBox checkOption3;
     
-    public ExampleOptionsPanel() {
-        initialize();
-    }
-    
-    private void initialize() {
-    
+    @Override
+    protected void createOptionsUI() {    
+    	setLayout(new FlowLayout(FlowLayout.LEFT));
     	textOption1 = new JTextField();
     	textOption2 = new JTextField();
     	

@@ -1,5 +1,7 @@
 package example.plugin;
 
+import gnu.hylafax.HylaFAXClient;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Properties;
@@ -10,15 +12,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import yajhfc.HylaClientManager;
+import yajhfc.MainWin;
 import yajhfc.Utils;
 import yajhfc.launch.Launcher2;
 import yajhfc.model.FmtItem;
-import yajhfc.model.MyTableModel;
+import yajhfc.model.table.FaxListTableModel;
 import yajhfc.options.PanelTreeNode;
 import yajhfc.plugin.PluginManager;
 import yajhfc.plugin.PluginUI;
+import yajhfc.server.ServerManager;
 import yajhfc.util.ExcDialogAbstractAction;
-import gnu.hylafax.HylaFAXClient;
 
 /**
  * Example initialization class for a YajHFC plugin.
@@ -89,11 +92,11 @@ public class EntryPoint {
 				Action countAction = new ExcDialogAbstractAction() {
 					@Override
 					public void actualActionPerformed(ActionEvent e) {
-						MyTableModel<? extends FmtItem> tableModel = MainWinAccessor.getSelectedTable().getRealModel();
 						
+						FaxListTableModel<? extends FmtItem> tableModel = ((MainWin)Launcher2.application).getSelectedTable().getRealModel();
 						JOptionPane.showMessageDialog((Component)e.getSource(), 
 							"Number of rows: " + tableModel.getRowCount() + "\n" + 
-							"Number of cols: " + tableModel.columns.size()
+							"Number of cols: " + tableModel.getColumns().size()
 								 );
 					}
 				};
@@ -102,7 +105,7 @@ public class EntryPoint {
 				Action serverAction = new ExcDialogAbstractAction() {
 					@Override
 					public void actualActionPerformed(ActionEvent e) {
-						HylaClientManager cliMan = Launcher2.application.getClientManager();
+						HylaClientManager cliMan = ServerManager.getDefault().getCurrent().getClientManager();
 						// Get a HylaFAXClient instance by calling beginServerTransaction
 						HylaFAXClient hyfc = cliMan.beginServerTransaction(Launcher2.application.getFrame());
 						
@@ -148,4 +151,13 @@ public class EntryPoint {
         }
         return options;
     }
+    
+    /**
+     * Launches YajHFC including this plugin (for debugging purposes)
+     * @param args
+     */
+    public static void main(String[] args) {
+		PluginManager.internalPlugins.add(EntryPoint.class);
+		Launcher2.main(args);
+	}
 }
