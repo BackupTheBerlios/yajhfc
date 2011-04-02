@@ -2,10 +2,10 @@ package example.plugin;
 
 import java.lang.reflect.Method;
 
-import yajhfc.FmtItem;
 import yajhfc.MainWin;
-import yajhfc.TableType;
 import yajhfc.launch.Launcher2;
+import yajhfc.model.FmtItem;
+import yajhfc.model.TableType;
 import yajhfc.model.TooltipJTable;
 
 /**

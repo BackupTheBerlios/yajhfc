@@ -9,10 +9,10 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import yajhfc.FmtItem;
 import yajhfc.HylaClientManager;
 import yajhfc.Utils;
 import yajhfc.launch.Launcher2;
+import yajhfc.model.FmtItem;
 import yajhfc.model.MyTableModel;
 import yajhfc.options.PanelTreeNode;
 import yajhfc.plugin.PluginManager;
