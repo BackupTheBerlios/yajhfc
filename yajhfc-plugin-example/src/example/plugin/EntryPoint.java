@@ -107,7 +107,7 @@ public class EntryPoint {
 					public void actualActionPerformed(ActionEvent e) {
 						HylaClientManager cliMan = ServerManager.getDefault().getCurrent().getClientManager();
 						// Get a HylaFAXClient instance by calling beginServerTransaction
-						HylaFAXClient hyfc = cliMan.beginServerTransaction(Launcher2.application.getFrame());
+						HylaFAXClient hyfc = cliMan.beginServerTransaction(Launcher2.application.getDialogUI());
 						
 						try {
 							JOptionPane.showMessageDialog((Component)e.getSource(), 
