@@ -40,6 +40,9 @@ $ANT clean fulldist
 echo "Building FOPPlugin..."
 cd $WORKSPACE/FOPPlugin
 $ANT clean fulldist
+echo "Building yajhfc-console..."
+cd $WORKSPACE/yajhfc-console
+$ANT clean fulldist
 echo "Building Windows Setup..."
 cd $EXTRADIR/winsetup
 
@@ -60,6 +63,8 @@ cp $WORKSPACE/yajhfc/build/yajhfc.jar $OUTPUT/yajhfc-$YAJVER.jar
 cp $WORKSPACE/yajhfc/build/yajhfc-src.zip $OUTPUT/yajhfc-$YAJVER-src.zip
 cp $WORKSPACE/FOPPlugin/build/FOPPlugin.zip $OUTPUT/yajhfc-$YAJVER-FOPPlugin-$FOPVER.zip
 cp $WORKSPACE/FOPPlugin/build/FOPPlugin-src.zip $OUTPUT/FOPPlugin-$FOPVER-src.zip
+cp $WORKSPACE/yajhfc-console/build/yajhfc-console.zip $OUTPUT/yajhfc-console-$YAJVER.zip
+cp $WORKSPACE/yajhfc-console/build/yajhfc-console-src.zip $OUTPUT/yajhfc-console-$YAJVER-src.zip
 
 cp $EXTRADIR/winsetup/Output/setup.exe $OUTPUT/yajhfc-$YAJVER-setup.exe
 cp $EXTRADIR/winsetup/Output/Setup-FOPPlugin.exe $OUTPUT/yajhfc-$YAJVER-FOPPlugin-$FOPVER-setup.exe

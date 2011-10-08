@@ -28,3 +28,6 @@ install -m 0644 yajhfc.xpm $PREFIX/share/pixmaps/yajhfc.xpm
 
 mkdir -p $PREFIX/share/applications
 install -m 0644 yajhfc.desktop $PREFIX/share/applications
+
+
+

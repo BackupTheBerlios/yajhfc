@@ -10,7 +10,7 @@
 #else
   #define APPNAME "YajHFC and FOPPlugin"
   #define APPVERNAME "YajHFC " + VERSION + " and FOPPlugin " + FOPVersion
-  #define FOPDIR "..\..\..\..\build\fop-0.95"
+  #define FOPDIR "..\..\..\..\build\fop-1.0"
 #endif
 
 [Files]
@@ -24,6 +24,12 @@ Source: ..\..\..\workspace\yajhfc\doc\faq_tr.pdf; DestDir: {app}; Components: do
 
 Source: ..\icons\yajhfc.ico; DestDir: {app}; Components: base
 Source: execyajhfc2.vbs; DestDir: {app}; Components: base
+
+; YajHFC console support
+Source: ..\..\..\workspace\yajhfc-console\build\yajhfc-console.jar; DestDir: {app}; Components: console
+Source: ..\..\..\workspace\yajhfc-console\build\cyajhfc.exe; DestDir: {app}; Components: console
+Source: ..\..\..\workspace\yajhfc-console\dist\README.txt; DestName: README-cyajhfc.txt; DestDir: {app}; Components: console
+
 ; Redmon: Common files (docs):
 Source: redmon\LICENCE; DestDir: {app}\redmon; Components: FaxPrinter/Redmon
 Source: redmon\README.TXT; DestDir: {app}\redmon; Components: FaxPrinter/Redmon
@@ -171,6 +177,7 @@ Name: Docs; Description: {cm:Documentation}; Types: full
 Name: FaxPrinter; Description: {cm:InstallFaxPrinter}; Types: full
 Name: FaxPrinter/Redmon; Description: {cm:RedmonComponentDesc}; Types: full; Flags: exclusive
 Name: FaxPrinter/RedmonEE; Description: {cm:RedmonEEComponentDesc}; Flags: exclusive
+Name: Console; Description: {cm:ConsoleSupport}; Types: full
 
 [Run]
 Filename: rundll32; StatusMsg: {cm:RemovingX,{cm:faxprinter}}; Components: faxprinter/redmon faxprinter/redmonee; Parameters: "printui.dll,PrintUIEntry /dl /n ""{cm:printername}"""; Check: RemoveOldPrinter; MinVersion: 0,5.0
@@ -183,7 +190,8 @@ Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printerna
 Filename: rundll32; Parameters: "printui.dll,PrintUIEntry /if /b ""{cm:printername}"" /f {win}\inf\ntprint.inf /r ""yajhfc:"" /m ""Xerox Phaser 6120 PS"""; Components: faxprinter/redmon faxprinter/redmonee; StatusMsg: {cm:InstallingX,{cm:faxprinter}}; Check: NoYajHFCPrinter; BeforeInstall: InstallYajHFCPort(); MinVersion: 0,6.01
 
 Filename: {app}\w98info.txt; Flags: shellexec; OnlyBelowVersion: 0,5.0; Components: faxprinter/redmon faxprinter/redmonee
-Filename: {code:GSSetupPath}; Check: InstallGS; StatusMsg: {cm:InstallingX,GhostScript}; Parameters: -auto
+;Filename: {code:GSSetupPath}; Check: InstallGS; StatusMsg: {cm:InstallingX,GhostScript}; Parameters: -auto
+Filename: {code:GSSetupPath}; Check: InstallGS; StatusMsg: {cm:InstallingX,GhostScript}; Parameters: /S
 Filename: {code:TIFFSetupPath}; Check: InstallTIFF; StatusMsg: {cm:InstallingX,tiff2pdf}; Parameters: /SILENT
 [UninstallRun]
 Filename: rundll32; Components: faxprinter/redmon faxprinter/redmonee; Parameters: "printui.dll,PrintUIEntry /dl /n ""{cm:printername}"""; RunOnceId: DeletePrinter; MinVersion: 0,5.0
@@ -220,6 +228,7 @@ PreserveDLMsg=Save downloaded files on the desktop?
 RedmonEE32bitOnly=RedmonEE is only supported on 32bit versions of Windows.
 RedmonEERecommended=On this version of Windows, using RedmonEE instead of Redmon is recommended.
 InstalledRedmonDiffers=The Redmon version already installed on this computer differs from the version you have selected for installation. Do you want setup to uninstall the already installed version? (If you select "No" YajHFC will continue to use the installed version.)
+ConsoleSupport=Support for command line only mode
 
 ; German translation:
 de.InstallFaxPrinter=Einen Faxdrucker installieren
@@ -234,6 +243,7 @@ de.PreserveDLMsg=Heruntergeladene Dateien auf dem Desktop speichern?
 de.RedmonEE32bitOnly=RedmonEE wird nur auf 32bit-Versionen von Windows unterstützt.
 de.RedmonEERecommended=Auf dieser Version von Windows wird empfohlen, RedmonEE anstatt von Redmon zu verwenden.
 de.InstalledRedmonDiffers=Die auf diesem Computer bereits installierte Redmon-Version weicht von der zur Installation ausgewählten ab. Möchten Sie, dass Setup die bereits installierte Version deinstalliert? (Wenn Sie "Nein" auswählen, wird YajHFC die bereits installierte Version weiterbenutzen.)
+de.ConsoleSupport=Unterstützung für Nur-Kommandozeilenmodus
 
 ; Spanish translation:
 es.InstallFaxPrinter=Instalar una impresora de faxes
@@ -315,8 +325,8 @@ var bInstallGS: boolean;
     preserveDownload: integer;
     bRemoveOldPrinter: boolean;
 const
-    ghostscript32path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs871w32.exe';
-    ghostscript64path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs871w64.exe';
+    ghostscript32path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs902w32.exe';
+    ghostscript64path = 'http://downloads.sourceforge.net/sourceforge/ghostscript/gs902w64.exe';
     ghostscriptdllkey = 'SOFTWARE\GPL Ghostscript';
     tiffkey = 'SOFTWARE\GnuWin32\Tiff';
     tiffpath = 'http://downloads.sourceforge.net/sourceforge/gnuwin32/tiff-3.8.2-1.exe';
@@ -406,7 +416,7 @@ begin
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'Printer', '');
 	RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'LogFileName', ExpandConstant('{app}\yajhfc-redmon.log'));
 	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'Output', 0);
-	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'ShowWindow', 1);
+	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'ShowWindow', 0);
 	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'RunUser', 1);
 	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'Delay', 1200);
 	RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'LogFileUse', 0);
@@ -435,7 +445,7 @@ begin
   RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'AfterworksCommand', '"' + ExpandConstant('{app}\submitanddelete.cmd') + '"');
   RegWriteStringValue(HKEY_LOCAL_MACHINE, portkey, 'AfterworksArguments', '%s');
   RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'Output', 0);
-  RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'ShowWindow', 1);
+  RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'ShowWindow', 0);
   RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'RunUser', 1);
   RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'StartShell', 0);
   RegWriteDWordValue(HKEY_LOCAL_MACHINE, portkey, 'ServerRunning', 0);

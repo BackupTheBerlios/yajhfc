@@ -31,12 +31,28 @@ for F in /etc/yajhfc/launcher-include.* ; do
   fi
 done
 
+
+SCRIPTNAME=`basename $0`
+
 if [ -n "$CLASSPATH" ]; then
   CLASSPATH=$CLASSPATH:/usr/share/yajhfc/yajhfc.jar
+  LAUNCHER=yajhfc.Launcher
+
+  if [ $SCRIPTNAME = cyajhfc ]; then
+    CLASSPATH=$CLASSPATH:/usr/share/yajhfc/yajhfc-console.jar
+    LAUNCHER=yajhfc.console.Launcher
+  fi
+
   export CLASSPATH
 
-  exec $JAVA yajhfc.Launcher $YAJHFCARGS "$@"
+  exec $JAVA $LAUNCHER $YAJHFCARGS "$@"
 else
-  exec $JAVA -jar /usr/share/yajhfc/yajhfc.jar $YAJHFCARGS "$@"
+  JARFILE=/usr/share/yajhfc/yajhfc.jar
+
+  if [ $SCRIPTNAME = cyajhfc ]; then
+    JARFILE=/usr/share/yajhfc/yajhfc-console.jar
+  fi
+
+  exec $JAVA -jar $JARFILE $YAJHFCARGS "$@"
 fi
 

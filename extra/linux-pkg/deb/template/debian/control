@@ -44,3 +44,13 @@ Description: FOP plugin for YajHFC
  This plugin uses Apache FOP to enable XSL-FO and limited ODT support in YajHFC.
  .
  The package itself does not contain Apache FOP, but depends on the respective Debian/Ubuntu package instead.
+
+Package: yajhfc-console
+Architecture: all
+Depends: yajhfc
+Description: Command line only mode for YajHFC
+ This package installs the command cyajhfc.
+ .
+ cyajhfc is an addon to YajHFC which allows to send faxes using a command line interface only, without invoking a graphical user interface.
+ .
+ The basic configuration must still be done using the graphical interface, however.

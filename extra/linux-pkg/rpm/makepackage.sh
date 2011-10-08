@@ -28,14 +28,14 @@ if [ $# -lt 2 ]; then
    if [ $NUMVER -eq 0 ]; then
      NUMVER=9999
      NUMVER2=${ORGVERSHORTED##*.}
-     (( NUMVER2-- ))
+     (( NUMVER2-- )) || true
      if [ $NUMVER2 -lt 0 ]; then
        echo "Unsupported minor version 0, script needs to be extended"
        exit 1 
      fi
      ORGVERSHORTED=${ORGVERSHORTED%.*}.$NUMVER2
    else
-     (( NUMVER=NUMVER-1 ))
+     (( NUMVER=NUMVER-1 )) || true
    fi
 
    case $APPENDIX in

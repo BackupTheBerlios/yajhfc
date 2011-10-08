@@ -25,7 +25,7 @@ SCRIPTDIR="$PWD"
 
 VERSION=$1
 if [ $# -lt 2 -o -z "$2" ]; then
-  PACKAGEVERSION=${VERSION}-1
+  PACKAGEVERSION=$(echo $VERSION | sed -r 's/(beta|rc|alpha)/~\1/')-1
 else
   PACKAGEVERSION=${2}
 fi
@@ -49,6 +49,9 @@ cd ../FOPPlugin
 cp build/FOPPlugin.jar $TARGETDIR/fopplugin
 cp dist/readme.pdf $TARGETDIR/fopplugin
 cp -R dist/examples $TARGETDIR/fopplugin/examples
+cd ../yajhfc-console
+cp build/yajhfc-console.jar $TARGETDIR
+cp dist/README.txt $TARGETDIR/console/doc/README-cyajhfc.txt
 popd
 
 if grep -c "yajhfc ($PACKAGEVERSION) unstable" template/debian/changelog > /dev/null; then

@@ -52,6 +52,7 @@ install: build
 	# Add here commands to install the package into debian/yajhfc.
 #	$(MAKE) DESTDIR=$(CURDIR)/debian/yajhfc install
 	sh install.sh $(CURDIR)/debian/yajhfc
+	sh install-console.sh $(CURDIR)/debian/yajhfc-console
 	sh install-faxprinter.sh $(CURDIR)/debian/yajhfc-faxprinter
 	sh install-fopplugin.sh $(CURDIR)/debian/yajhfc-fopplugin
 
